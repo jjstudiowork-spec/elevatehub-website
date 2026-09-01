@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Setup guides and support for ElevateHub, ElevateFlow, and the ElevateHub Stream Deck plugin." />
+  <meta name="theme-color" content="#0b0d0f" />
+  <title>ElevateHub Support</title>
+  <link rel="icon" href="elevatehub.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="support.css" />
+  <link rel="stylesheet" href="stream-deck.css" />
+</head>
+<body class="support-page">
+  <header class="site-header">
+    <a class="brand" href="index.html"><img src="elevatehub.png" alt="" /><span>ElevateHub</span></a>
+    <nav aria-label="Main navigation"><a href="index.html#suite">Suite</a><a href="index.html#workspace">Workspace</a><a href="support.html" class="active">Support</a><a href="download.html" class="nav-download">Download</a></nav>
+    <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><i data-lucide="menu"></i></button>
+  </header>
+  <main>
+    <section class="support-hero">
+      <span class="eyebrow">ELEVATEHUB SUPPORT</span>
+      <h1>How can we help?</h1>
+      <p>Get your suite installed, connect your production tools, or sort out an issue before service starts.</p>
+      <label class="support-search"><i data-lucide="search"></i><span class="sr-only">Search support topics</span><input type="search" placeholder="Search setup, Stream Deck, updates..." data-support-search /></label>
+    </section>
+    <section class="support-topics">
+      <article data-search-terms="install download update updater mac windows flow studio"><div class="support-topic-icon"><i data-lucide="download"></i></div><span>GETTING STARTED</span><h2>Install and update</h2><p>Download ElevateHub, install ElevateFlow, and keep every installed studio current from the Hub.</p><a href="download.html">Open installation guide <i data-lucide="arrow-right"></i></a></article>
+      <article data-search-terms="stream deck plugin resolume button inspector marketplace connection offline set"><div class="support-topic-icon"><i data-lucide="panels-top-left"></i></div><span>STREAM DECK</span><h2>Connect the plugin</h2><p>Install the plugin, open Resolume Control in ElevateHub, and assign your Hub buttons to Stream Deck keys.</p><a href="#stream-deck">View Stream Deck setup <i data-lucide="arrow-right"></i></a></article>
+      <article data-search-terms="team pin account profile sign in login access admin"><div class="support-topic-icon"><i data-lucide="users"></i></div><span>ACCOUNTS</span><h2>Teams and profiles</h2><p>Select your operator profile, enter your PIN, and keep personal layouts and controls separate on shared computers.</p><a href="#questions">See common questions <i data-lucide="arrow-right"></i></a></article>
+    </section>
+    <section class="plugin-install" id="stream-deck" data-search-section="stream deck plugin download install resolume marketplace">
+      <img src="assets/stream-deck/app-icon-288.png" alt="ElevateHub plugin icon" />
+      <div><span class="eyebrow">ELEVATEHUB FOR STREAM DECK</span><h2>Install the plugin.</h2><p>Download the current verified plugin, open the file, and let the Stream Deck app complete installation.</p><div class="plugin-install-meta"><span><i data-lucide="badge-check"></i> Version 0.3.6</span><span><i data-lucide="monitor-check"></i> macOS and Windows</span></div></div>
+      <div class="plugin-install-actions"><a class="button primary" href="assets/stream-deck/ElevateHub-Plugin-v0.3.6.streamDeckPlugin" download><i data-lucide="download"></i><span>Download plugin</span></a><small>Elgato Marketplace listing coming soon</small></div>
+    </section>
+
+    <section class="guide-section" data-search-section="stream deck plugin resolume button inspector setup connection offline">
+      <div class="guide-heading"><span class="eyebrow">STREAM DECK SETUP</span><h2>From install to first button.</h2><p>ElevateHub remains the source of truth. Stream Deck reflects the active set and sends presses back to the Hub.</p></div>
+      <ol class="guide-steps">
+        <li><b>01</b><div><h3>Install both apps</h3><p>Install ElevateHub and the ElevateHub plugin from the Elgato Marketplace, then restart Stream Deck.</p></div></li>
+        <li><b>02</b><div><h3>Open Resolume Control</h3><p>Launch ElevateHub, select your profile, and open Resolume Control. The plugin connects automatically on the same computer.</p></div></li>
+        <li><b>03</b><div><h3>Add a button</h3><p>Drag <strong>ElevateHub Button</strong> onto a key. Choose the matching device, set, and button in the Property Inspector.</p></div></li>
+        <li><b>04</b><div><h3>Confirm the live label</h3><p>The key should show the assigned label or action. The ElevateHub icon appears when the Hub connection is unavailable.</p></div></li>
+      </ol>
+      <div class="support-note"><i data-lucide="wifi-off"></i><div><strong>Seeing the ElevateHub icon on every key?</strong><span>Keep ElevateHub open and enter Resolume Control once. If it stays offline, restart Stream Deck after installing the latest plugin version.</span></div></div>
+    </section>
+
+    <section class="deck-gallery" id="stream-deck-gallery" data-search-section="stream deck screenshots resolume controls property inspector sets offline">
+      <div class="guide-heading"><span class="eyebrow">SEE IT IN ACTION</span><h2>Built for the control desk.</h2><p>Every key stays readable, customizable, and connected to the active ElevateHub set.</p></div>
+      <div class="deck-gallery-grid">
+        <figure class="wide"><img src="assets/stream-deck/01-resolume-control.png" alt="ElevateHub Resolume Control with Stream Deck" loading="lazy" /><figcaption><strong>Complete Resolume control</strong><span>Design keys in ElevateHub and use them from Stream Deck.</span></figcaption></figure>
+        <figure><img src="assets/stream-deck/02-property-inspector.png" alt="ElevateHub Stream Deck Property Inspector" loading="lazy" /><figcaption><strong>Clear assignments</strong><span>See the device, set, action, and connection in one inspector.</span></figcaption></figure>
+        <figure><img src="assets/stream-deck/03-set-navigation.png" alt="ElevateHub set navigation buttons on Stream Deck" loading="lazy" /><figcaption><strong>Move between sets</strong><span>Previous and next controls keep layouts close at hand.</span></figcaption></figure>
+        <figure class="wide"><img src="assets/stream-deck/04-offline-reconnect.png" alt="ElevateHub Stream Deck offline and reconnect states" loading="lazy" /><figcaption><strong>Know when it is offline</strong><span>A clear fallback icon shows when ElevateHub is unavailable.</span></figcaption></figure>
+      </div>
+    </section>
+    <section class="faq-section" id="questions" data-search-section="questions crash update security pin account plugin privacy uninstall delete">
+      <div class="guide-heading"><span class="eyebrow">COMMON QUESTIONS</span><h2>Quick answers.</h2></div>
+      <div class="faq-list">
+        <details><summary>Why does macOS or Windows show a security warning?<i data-lucide="plus"></i></summary><p>Current builds are independently distributed and are not code-signed by an Apple or Microsoft certificate authority. Only download ElevateHub from this site or the official GitHub releases page.</p></details>
+        <details><summary>Can ElevateFlow open without ElevateHub?<i data-lucide="plus"></i></summary><p>Yes. Once installed, ElevateFlow can launch directly from Applications or the Start menu. ElevateHub remains the easiest place to install and update it.</p></details>
+        <details><summary>Does the Stream Deck plugin work without Resolume?<i data-lucide="plus"></i></summary><p>The plugin connects to ElevateHub. Actions that control Resolume still require Resolume to be running and reachable from Resolume Control.</p></details>
+        <details><summary>Where are my button layouts stored?<i data-lucide="plus"></i></summary><p>Resolume Control sets are kept with the selected ElevateHub team profile, so operators on the same computer can use separate layouts.</p></details>
+      </div>
+    </section>
+    <section class="contact-band"><div><span class="eyebrow">STILL STUCK?</span><h2>Tell us what happened.</h2><p>Include your operating system, ElevateHub version, and the exact step that failed.</p></div><a class="button primary light" href="https://github.com/jjstudiowork-spec/elevatehub-downloads/issues/new"><i data-lucide="message-square-more"></i><span>Open a support request</span></a></section>
+  </main>
+  <footer class="site-footer"><div class="footer-brand"><img src="elevatehub.png" alt="" /><span><strong>ElevateHub</strong><small>Live production, connected.</small></span></div><div class="footer-links"><a href="index.html">Home</a><a href="download.html">Download</a><a href="releases.html">Release notes</a></div><p>© 2026 ElevateHub. Built by Jeremy Jarega.</p></footer>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script><script src="site.js"></script>
+</body>
+</html>

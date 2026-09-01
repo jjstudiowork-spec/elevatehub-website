@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ElevateHub release history, update notes, and downloads for macOS and Windows." />
+  <meta name="theme-color" content="#0b0d0f" />
+  <title>ElevateHub Releases</title>
+  <link rel="icon" href="elevatehub.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="releases.css" />
+  <link rel="stylesheet" href="release-status.css" />
+</head>
+<body class="releases-page">
+  <header class="site-header">
+    <a class="brand" href="index.html"><img src="elevatehub.png" alt="" /><span>ElevateHub</span></a>
+    <nav aria-label="Main navigation"><a href="index.html#suite">Suite</a><a href="support.html">Support</a><a href="releases.html" class="active">Releases</a><a href="download.html" class="nav-download">Download</a></nav>
+    <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><i data-lucide="menu"></i></button>
+  </header>
+  <main>
+    <aside class="release-live" data-release-status data-show-completed="true" hidden><span class="release-live-pulse"></span><div><strong data-release-status-title>Release in progress</strong><small data-release-status-message>Preparing ElevateHub</small></div><span data-release-status-time></span></aside>
+    <section class="releases-hero">
+      <span class="eyebrow">RELEASE HISTORY</span>
+      <h1>What’s new in ElevateHub.</h1>
+      <p>Updates, improvements, and installers without leaving the ElevateHub website.</p>
+      <div class="release-current"><span></span><b data-release-version>Checking latest release...</b><small>Current public version</small></div>
+    </section>
+    <section class="release-feed" aria-live="polite">
+      <div class="release-loading" data-releases-loading><i data-lucide="loader-circle"></i><span>Loading releases</span></div>
+      <div class="release-list" data-release-list></div>
+      <div class="release-error" data-releases-error hidden><i data-lucide="cloud-off"></i><h2>Release history is temporarily unavailable.</h2><p>Please check again shortly. Existing installations can still check for updates normally.</p></div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="footer-brand"><img src="elevatehub.png" alt="" /><span><strong>ElevateHub</strong><small>Live production, connected.</small></span></div><div class="footer-links"><a href="index.html">Home</a><a href="download.html">Download</a><a href="support.html">Support</a></div><p>© 2026 ElevateHub. Built by Jeremy Jarega.</p></footer>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="site.js"></script>
+  <script src="releases.js"></script>
+</body>
+</html>

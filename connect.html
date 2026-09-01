@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ElevateFlow Remote</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --card: #0c0c0c;
+            --accent: #00ff88;
+            --danger: #ff4444;
+            --text: #ffffff;
+            --text-dim: #555555;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: #1a1a1a;
+        }
+
+        body {
+            font-family: -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── PREVIEW SECTION ── */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .status-indicator {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            background: rgba(0, 255, 136, 0.05);
+            padding: 8px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        #current-text {
+            font-size: 2rem;
+            font-weight: 500;
+            line-height: 1.2;
+            color: #ffffff;
+            max-width: 600px;
+            text-wrap: balance;
+            opacity: 0.9;
+        }
+
+        /* ── CONTROLS SECTION ── */
+        .controls-grid {
+            background: var(--card);
+            padding: 32px 24px 64px 24px;
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .remote-btn {
+            appearance: none;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            color: white;
+            padding: 35px 0;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+            position: relative;
+            outline: none;
+        }
+
+        /* Premium Pressed Interaction */
+        .remote-btn:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #444;
+        }
+
+        .next-btn:active {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+        }
+
+        .prev-btn:active {
+            border-color: var(--danger);
+            color: var(--danger);
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.1);
+        }
+
+        /* ── CONFIG OVERLAY ── */
+        #setup-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 48px;
+        }
+
+        .setup-brand {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -1.5px;
+        }
+
+        .setup-sub {
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .ip-input {
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            font-size: 18px;
+            font-family: inherit;
+            margin-bottom: 24px;
+            outline: none;
+        }
+
+        .ip-input:focus { border-color: #444; }
+
+        .connect-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <div id="setup-screen">
+        <div class="setup-brand">ElevateFlow</div>
+        <div class="setup-sub">Enter your instance IP to begin.</div>
+        <input type="text" id="ip-field" class="ip-input" placeholder="192.168.x.x" inputmode="decimal">
+        <button class="connect-btn" onclick="saveIP()">Link Remote</button>
+    </div>
+
+    <div class="preview-area">
+        <div class="status-indicator" id="status-box">
+            <div class="status-dot"></div>
+            <span id="status-text">Synchronized</span>
+        </div>
+        <div id="current-text">Ready</div>
+    </div>
+
+    <div class="controls-grid">
+        <button class="remote-btn prev-btn" onclick="fire('prev')">Previous</button>
+        <button class="remote-btn next-btn" onclick="fire('next')">Next</button>
+    </div>
+
+    <script>
+        let targetIP = localStorage.getItem('ef_target_ip');
+        const PORT = "9090";
+
+        if (targetIP) {
+            document.getElementById('setup-screen').classList.add('hidden');
+            initSync();
+        }
+
+        function saveIP() {
+            const ip = document.getElementById('ip-field').value.trim();
+            if (ip) {
+                localStorage.setItem('ef_target_ip', ip);
+                location.reload();
+            }
+        }
+
+        async function fire(cmd) {
+            if (!targetIP) return;
+            if (window.navigator.vibrate) window.navigator.vibrate(30);
+
+            try {
+                await fetch(`http://${targetIP}:${PORT}/${cmd}`, { mode: 'no-cors' });
+            } catch (e) { console.error("Signal failed"); }
+        }
+
+        async function initSync() {
+            // Live Text Polling
+            setInterval(async () => {
+                try {
+                    const res = await fetch(`http://${targetIP}:${PORT}/status`);
+                    const data = await res.json();
+                    document.getElementById('current-text').innerText = data || "No Slide Content";
+                    updateStatus(true);
+                } catch (e) {
+                    updateStatus(false);
+                }
+            }, 1000);
+        }
+
+        function updateStatus(isOnline) {
+            const box = document.getElementById('status-box');
+            const txt = document.getElementById('status-text');
+            if (isOnline) {
+                txt.innerText = "Synchronized";
+                box.style.color = "var(--accent)";
+                box.style.borderColor = "rgba(0, 255, 136, 0.2)";
+            } else {
+                txt.innerText = "Offline";
+                box.style.color = "var(--danger)";
+                box.style.borderColor = "rgba(255, 68, 68, 0.2)";
+            }
+        }
+    </script>
+</body>
+</html>

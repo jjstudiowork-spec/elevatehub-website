@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Download ElevateHub for macOS or Windows." />
+  <meta name="theme-color" content="#0b0d0f" />
+  <title>Download ElevateHub</title>
+  <link rel="icon" href="elevatehub.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="download-page">
+  <header class="site-header">
+    <a class="brand" href="index.html"><img src="elevatehub.png" alt="" /><span>ElevateHub</span></a>
+    <nav aria-label="Main navigation"><a href="index.html#suite">Suite</a><a href="index.html#workspace">Workspace</a><a href="support.html">Support</a><a href="download.html" class="nav-download active">Download</a></nav>
+    <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><i data-lucide="menu"></i></button>
+  </header>
+
+  <main>
+    <section class="download-hero">
+      <img class="download-mark" src="elevatehub.png" alt="ElevateHub icon" />
+      <span class="eyebrow">ELEVATEHUB <b data-release-version>LATEST RELEASE</b></span>
+      <h1>Download ElevateHub</h1>
+      <p>Get the Hub once. Install, launch, and update the Elevate studios your team uses from there.</p>
+      <a class="button primary download-detected" data-primary-download href="releases.html"><i data-lucide="download"></i><span>View latest downloads</span></a>
+      <small data-download-note>Detecting your platform…</small>
+    </section>
+
+    <section class="download-options">
+      <article>
+        <div class="platform-icon"><i data-lucide="laptop"></i></div>
+        <div><span>macOS</span><h2>Universal</h2><p>For Apple silicon and Intel Macs.</p></div>
+        <a class="icon-link" data-mac-download href="releases.html" aria-label="Download for macOS"><i data-lucide="arrow-down-to-line"></i></a>
+      </article>
+      <article>
+        <div class="platform-icon"><i data-lucide="monitor"></i></div>
+        <div><span>Windows</span><h2>Windows 10 and 11</h2><p>64-bit installer for modern Windows PCs.</p></div>
+        <a class="icon-link" data-windows-download href="releases.html" aria-label="Download for Windows"><i data-lucide="arrow-down-to-line"></i></a>
+      </article>
+    </section>
+
+    <section class="install-section">
+      <div class="section-intro compact"><span class="eyebrow">INSTALLATION</span><h2>From download to show-ready.</h2><p>ElevateHub handles the studios after installation. Because current builds are independently distributed, your operating system may show a security prompt.</p></div>
+      <div class="install-columns">
+        <div>
+          <header><i data-lucide="laptop"></i><h3>On macOS</h3></header>
+          <ol><li><b>1</b><span>Open the downloaded DMG and move ElevateHub to Applications.</span></li><li><b>2</b><span>If macOS blocks it, open Terminal and run:</span></li></ol>
+          <div class="command"><code>xattr -rd com.apple.quarantine /Applications/ElevateHub.app</code><button type="button" data-copy-command aria-label="Copy command"><i data-lucide="copy"></i></button></div>
+          <ol start="3"><li><b>3</b><span>Open ElevateHub from Applications.</span></li></ol>
+        </div>
+        <div>
+          <header><i data-lucide="monitor"></i><h3>On Windows</h3></header>
+          <ol><li><b>1</b><span>Run the downloaded ElevateHub installer.</span></li><li><b>2</b><span>If SmartScreen appears, choose More info, then Run anyway.</span></li><li><b>3</b><span>Launch ElevateHub from the Start menu.</span></li></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="download-help"><i data-lucide="shield-check"></i><div><h2>Your updates stay verified.</h2><p>ElevateHub verifies signed update metadata and studio package hashes before installing new versions.</p></div><a href="releases.html">View releases <i data-lucide="arrow-right"></i></a></section>
+  </main>
+
+  <footer class="site-footer"><div class="footer-brand"><img src="elevatehub.png" alt="" /><span><strong>ElevateHub</strong><small>Live production, connected.</small></span></div><div class="footer-links"><a href="index.html">Home</a><a href="support.html">Support</a><a href="releases.html">Release notes</a></div><p>© 2026 ElevateHub. Built by Jeremy Jarega.</p></footer>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="site.js"></script>
+</body>
+</html>
