@@ -14,7 +14,8 @@ function classifyAsset(asset) {
 
 function makeReleaseCard(release, index) {
   const card = document.createElement('article');
-  card.className = 'release-card';
+  card.className = 'release-card motion-reveal';
+  card.style.setProperty('--motion-delay', `${(index % 3) * 70}ms`);
 
   const side = document.createElement('div');
   side.className = 'release-card-side';
@@ -68,6 +69,9 @@ async function loadReleaseHistory() {
     releases.forEach((release, index) => list.append(makeReleaseCard(release, index)));
     loading.hidden = true;
     initializeIcons();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      list.querySelectorAll('.release-card').forEach((card) => card.classList.add('motion-visible'));
+    }));
   } catch (error) {
     console.warn('[ElevateHub site] Could not load release history:', error);
     loading.hidden = true;
