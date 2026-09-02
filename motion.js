@@ -1,5 +1,71 @@
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+function initializePreloader() {
+  if (reducedMotion || sessionStorage.getItem('elevatehub-intro-seen')) return;
+  document.body.classList.add('preloading');
+  const loader = document.createElement('div');
+  loader.className = 'motion-preloader';
+  loader.innerHTML = '<div class="motion-preloader-panel"></div><div class="motion-preloader-panel"></div><div class="motion-preloader-content"><img src="elevatehub.png" alt=""><strong class="motion-preloader-count">000</strong><div class="motion-preloader-line"><i></i></div><span class="motion-preloader-label">PREPARING THE HUB</span></div>';
+  document.body.append(loader);
+  const count = loader.querySelector('.motion-preloader-count');
+  const line = loader.querySelector('.motion-preloader-line i');
+  const started = performance.now();
+  const duration = 900;
+  const tick = (now) => {
+    const progress = Math.min(1, (now - started) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    count.textContent = String(Math.round(eased * 100)).padStart(3, '0');
+    line.style.transform = `scaleX(${eased})`;
+    if (progress < 1) return requestAnimationFrame(tick);
+    sessionStorage.setItem('elevatehub-intro-seen', 'true');
+    loader.classList.add('is-leaving');
+    document.body.classList.remove('preloading');
+    window.setTimeout(() => loader.remove(), 950);
+  };
+  requestAnimationFrame(tick);
+}
+
+function initializeCursor() {
+  if (reducedMotion || !window.matchMedia('(pointer: fine)').matches) return;
+  const dot = document.createElement('span');
+  const ring = document.createElement('span');
+  dot.className = 'motion-cursor-dot';
+  ring.className = 'motion-cursor-ring';
+  document.body.append(dot, ring);
+  let mouseX = -100, mouseY = -100, ringX = -100, ringY = -100, running = false;
+  const render = () => {
+    ringX += (mouseX - ringX) * .14;
+    ringY += (mouseY - ringY) * .14;
+    dot.style.transform = `translate3d(${mouseX - 2.5}px, ${mouseY - 2.5}px, 0)`;
+    ring.style.transform = `translate3d(${ringX - ring.offsetWidth / 2}px, ${ringY - ring.offsetHeight / 2}px, 0)`;
+    if (Math.abs(mouseX - ringX) + Math.abs(mouseY - ringY) > .2) requestAnimationFrame(render);
+    else running = false;
+  };
+  window.addEventListener('pointermove', (event) => {
+    mouseX = event.clientX; mouseY = event.clientY;
+    document.body.classList.add('motion-cursor-active');
+    if (!running) { running = true; requestAnimationFrame(render); }
+  }, { passive: true });
+  document.querySelectorAll('a,button,summary,input').forEach((item) => {
+    item.addEventListener('pointerenter', () => document.body.classList.add('motion-cursor-hover'));
+    item.addEventListener('pointerleave', () => document.body.classList.remove('motion-cursor-hover'));
+  });
+}
+
+function initializePageTransitions() {
+  if (reducedMotion) return;
+  const wipe = document.createElement('div');
+  wipe.className = 'page-wipe';
+  document.body.append(wipe);
+  document.querySelectorAll('a[href]').forEach((link) => link.addEventListener('click', (event) => {
+    const url = new URL(link.href, window.location.href);
+    if (url.origin !== window.location.origin || url.hash || link.hasAttribute('download') || event.metaKey || event.ctrlKey) return;
+    event.preventDefault();
+    wipe.classList.add('is-active');
+    window.setTimeout(() => { window.location.href = url.href; }, 430);
+  }));
+}
+
 function initializeProgress() {
   const progress = document.createElement('div');
   progress.className = 'site-progress';
@@ -96,7 +162,52 @@ function initializeMagneticButtons() {
   demo?.addEventListener('pointerleave', () => { demo.style.transform = ''; });
 }
 
+function initializeKineticText() {
+  const text = document.querySelector('[data-kinetic-text]');
+  if (!text) return;
+  const words = text.textContent.trim().split(/\s+/);
+  text.innerHTML = words.map((word) => `<span class="kinetic-word">${word}</span>`).join(' ');
+  if (reducedMotion) {
+    text.querySelectorAll('.kinetic-word').forEach((word) => word.classList.add('is-lit'));
+    return;
+  }
+  const update = () => {
+    const rect = text.getBoundingClientRect();
+    const progress = Math.min(1, Math.max(0, (window.innerHeight * .82 - rect.top) / (window.innerHeight * .62 + rect.height)));
+    const lit = Math.ceil(progress * words.length);
+    text.querySelectorAll('.kinetic-word').forEach((word, index) => word.classList.toggle('is-lit', index < lit));
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
+
+function initializeWorkflowStory() {
+  if (reducedMotion || window.innerWidth <= 820) return;
+  const story = document.querySelector('.workflow-story');
+  const track = document.querySelector('.workflow-story-track');
+  if (!story || !track) return;
+  let scheduled = false;
+  const update = () => {
+    const rect = story.getBoundingClientRect();
+    const travel = Math.max(0, track.scrollWidth - window.innerWidth + 48);
+    const range = Math.max(1, story.offsetHeight - window.innerHeight);
+    const progress = Math.min(1, Math.max(0, -rect.top / range));
+    track.style.transform = `translate3d(${-travel * progress}px, 0, 0)`;
+    scheduled = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}
+
+initializePreloader();
 initializeProgress();
 initializeReveals();
 initializeHeroParallax();
 initializeMagneticButtons();
+initializeCursor();
+initializePageTransitions();
+initializeKineticText();
+initializeWorkflowStory();
