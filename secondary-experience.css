@@ -1,0 +1,38 @@
+/* Carries the Trinity Tops editorial language through utility pages. */
+* { letter-spacing: 0 !important; }
+body { background: #060606; font-family: "Cormorant Garamond", serif; }
+.site-header { top: 22px; left: 50%; width: calc(100% - 40px); max-width: 1440px; height: auto; padding: 14px 28px; transform: translateX(-50%); border: 1px solid rgba(255, 255, 255, .07); border-radius: 28px; background: rgba(6, 6, 6, .58); backdrop-filter: blur(28px) saturate(1.4); }
+.site-header.motion-scrolled { height: auto; background: rgba(6, 6, 6, .9); border-color: rgba(200, 169, 126, .2); }
+.brand { font: 300 17px Oswald, sans-serif; text-transform: uppercase; }
+.site-header nav a { font: 400 8px "Space Mono", monospace; text-transform: uppercase; }
+.site-header .nav-download { border: 0; border-radius: 20px; background: #fff; color: #000; }
+.download-page main, .support-page main, .releases-page main { padding-top: 90px; }
+.eyebrow, .section-label { color: #c8a97e; font-family: "Space Mono", monospace; text-transform: uppercase; }
+.download-hero, .support-hero, .releases-hero { padding-top: 105px; padding-bottom: 80px; }
+.download-hero h1, .support-hero h1, .releases-hero h1 { font-family: Oswald, sans-serif; font-size: 74px; font-weight: 200; line-height: 1; text-transform: uppercase; }
+.download-hero > p, .support-hero > p, .releases-hero > p { color: #777; font-size: 19px; font-style: italic; }
+.button { border-radius: 6px; font-family: "Space Mono", monospace; font-size: 9px; text-transform: uppercase; }
+.button.primary { background: #c8a97e; color: #080808; }
+.download-options article, .support-topics article, .release-card, .plugin-install, .deck-gallery figure { border-color: rgba(255, 255, 255, .07); border-radius: 8px; background: #0d0d0d; }
+.download-options h2, .support-topics h2, .release-card-main h2, .plugin-install h2, .deck-gallery h2, .faq-section h2, .guide-heading h2 { font-family: Oswald, sans-serif; font-weight: 300; text-transform: uppercase; }
+.download-options p, .support-topics p, .release-notes, .plugin-install p, .guide-heading > p, .faq-list details p { font-family: "Cormorant Garamond", serif; font-size: 15px; }
+.support-search { border-color: rgba(255, 255, 255, .1); border-radius: 24px; background: #0d0d0d; }
+.support-search input { font-family: "Space Mono", monospace; font-size: 10px; }
+.guide-section, .install-section { background: #efeee9; }
+.guide-section .guide-heading h2, .install-section h2 { color: #0b0b0b; }
+.guide-steps li, .install-columns > div { border-radius: 8px; }
+.deck-gallery, .faq-section { background: #060606; }
+.release-card-side strong { font-family: Oswald, sans-serif; font-weight: 300; }
+.release-asset { border-radius: 6px; font-family: "Space Mono", monospace; }
+.contact-band, .download-band { background: #c8a97e; }
+.site-footer { background: #060606; }
+.footer-brand strong { font-family: Oswald, sans-serif; font-weight: 300; text-transform: uppercase; }
+.footer-links a, .site-footer p { font-family: "Space Mono", monospace; }
+
+@media (max-width: 820px) {
+  .site-header { top: 12px; width: calc(100% - 24px); padding: 12px 15px; border-radius: 12px; }
+  .site-header nav { top: 58px; border-radius: 12px; background: #090909; }
+  .download-page main, .support-page main, .releases-page main { padding-top: 72px; }
+  .download-hero, .support-hero, .releases-hero { padding-top: 75px; }
+  .download-hero h1, .support-hero h1, .releases-hero h1 { font-size: 50px; }
+}

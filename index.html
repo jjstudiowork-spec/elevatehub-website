@@ -4,180 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="ElevateHub connects presentation, media, timing, and operator tools for live production teams." />
-  <meta name="theme-color" content="#0b0d0f" />
-  <title>ElevateHub | One home for live production</title>
+  <meta name="theme-color" content="#060606" />
+  <title>ElevateHub | Live production, connected</title>
   <link rel="icon" href="elevatehub.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="stream-deck.css" />
-  <link rel="stylesheet" href="release-status.css" />
-  <link rel="stylesheet" href="motion.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&amp;family=Oswald:wght@200;300;400;500;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="trinity-base.css" />
+  <link rel="stylesheet" href="elevate-experience.css" />
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="ElevateHub home">
-      <img src="elevatehub.png" alt="" />
-      <span>ElevateHub</span>
-    </a>
-    <nav aria-label="Main navigation">
-      <a href="#suite">Suite</a>
-      <a href="#workspace">Workspace</a>
-      <a href="#teams">Teams</a>
-      <a href="support.html">Support</a>
-      <a href="download.html" class="nav-download">Download</a>
-    </nav>
-    <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><i data-lucide="menu"></i></button>
+  <div id="cur-dot" aria-hidden="true"></div><div id="cur-ring" aria-hidden="true"></div><div id="progress-bar" aria-hidden="true"></div>
+  <div id="preloader" aria-hidden="true"><div class="pre-panel top"></div><div class="pre-panel bottom"></div></div>
+  <div id="pre-content" aria-hidden="true"><img class="pre-icon" src="elevatehub.png" alt="" /><div id="pre-counter">000</div><div class="pre-bar-wrap"><div id="pre-bar-fill"></div></div><div id="pre-brand">ELEVATEHUB</div></div>
+  <div id="fullMenu" aria-hidden="true"><button class="menu-close" type="button" aria-label="Close menu" onclick="toggleMenu()">×</button><div class="menu-inner"><a class="menu-link" href="#suite" onclick="toggleMenu()">Suite</a><a class="menu-link" href="#workspace" onclick="toggleMenu()">Workspace</a><a class="menu-link" href="support.html">Support</a><a class="menu-link" href="releases.html">Releases</a><p class="menu-tagline">Live production · connected</p></div></div>
+
+  <header id="mainNav">
+    <a class="logo" href="#top"><img src="elevatehub.png" alt="" /><span>ELEVATE<span class="g">HUB</span></span></a>
+    <div class="nav-group"><a class="nav-link" href="#suite" data-scramble>Suite</a><a class="nav-link" href="#workspace" data-scramble>Workspace</a><a class="nav-link" href="support.html" data-scramble>Support</a><button class="hamburger" type="button" aria-label="Open menu" onclick="toggleMenu()"><span class="bar"></span><span class="bar"></span></button><a class="cart-btn magnetic" href="download.html"><span>Download</span><i data-lucide="arrow-down-to-line"></i></a></div>
   </header>
 
   <main id="top">
     <aside class="release-live" data-release-status hidden><span class="release-live-pulse"></span><div><strong data-release-status-title>Release in progress</strong><small data-release-status-message>Preparing ElevateHub</small></div><span data-release-status-time></span><a href="releases.html">View releases <i data-lucide="arrow-right"></i></a></aside>
-    <section class="hero">
-      <div class="hero-media" aria-hidden="true">
-        <img src="assets/site/hero-production.jpg" alt="" />
-      </div>
-      <div class="hero-shade"></div>
-      <div class="hero-content">
-        <div class="release-pill"><span></span><b data-release-version>Latest release</b><em>Available now</em></div>
-        <h1>ElevateHub</h1>
-        <p>One calm, connected workspace for the people running your screens, media, timing, and live production.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="download.html"><i data-lucide="download"></i><span>Download ElevateHub</span></a>
-          <a class="button secondary" href="#suite"><i data-lucide="play"></i><span>Explore the suite</span></a>
-        </div>
-        <div class="platform-line"><i data-lucide="monitor"></i><span>Built for macOS and Windows</span></div>
-      </div>
-      <div class="hero-orbit" aria-hidden="true"><span>LIVE</span><i></i><small>PRODUCTION<br />CONNECTED</small></div>
-      <a class="scroll-cue" href="#suite" aria-label="Continue to suite"><span>Meet the suite</span><i data-lucide="arrow-down"></i></a>
-    </section>
+    <section class="hero-outer"><div class="hero-film" id="heroFilm"><img class="hero-video" id="heroVid" src="assets/site/hero-production.jpg" alt="Live production team operating a church service" /><div class="hero-copy"><span class="hero-eyebrow" id="heroEyebrow">LIVE PRODUCTION · CONNECTED</span><h1 class="hero-h1" aria-label="ElevateHub"><span class="line-clip"><span class="line-inner" id="line1">ELEVATE</span></span><span class="line-clip"><span class="line-inner" id="line2"><em>HUB</em></span></span></h1><p class="hero-sub" id="heroSub">One calm home for presentations, media, timing, and the people running the room.</p><a class="hero-cta magnetic" id="heroCta" href="download.html">Download ElevateHub <i data-lucide="arrow-right"></i></a></div><div class="hero-badge" id="heroBadge"><div class="hero-badge-ring">ELEVATEHUB · LIVE TOOLS · ELEVATEHUB ·</div><div class="hero-badge-inner"><span></span>LIVE<br />READY</div></div><div class="scroll-hint" id="scrollHint"><span>Explore</span><div class="scroll-line"></div></div></div></section>
 
-    <section class="production-marquee" aria-label="ElevateHub production tools">
-      <div class="production-marquee-track">
-        <span>LIVE PRODUCTION</span><i></i><span>PRESENTATIONS</span><i></i><span>RESOLUME CONTROL</span><i></i><span>STREAM DECK</span><i></i><span>TEAM WORKSPACES</span><i></i><span>LIVE TIMING</span><i></i>
-        <span aria-hidden="true">LIVE PRODUCTION</span><i aria-hidden="true"></i><span aria-hidden="true">PRESENTATIONS</span><i aria-hidden="true"></i><span aria-hidden="true">RESOLUME CONTROL</span><i aria-hidden="true"></i><span aria-hidden="true">STREAM DECK</span><i aria-hidden="true"></i><span aria-hidden="true">TEAM WORKSPACES</span><i aria-hidden="true"></i><span aria-hidden="true">LIVE TIMING</span><i aria-hidden="true"></i>
-      </div>
-    </section>
+    <section class="marquee-section" aria-label="ElevateHub capabilities"><div class="marquee-track"><span class="m-text">PRESENTATIONS · RESOLUME · STREAM DECK · LIVE TIMING ·</span><span class="m-text gold">ONE HUB · EVERY OPERATOR ·</span><span class="m-text" aria-hidden="true">PRESENTATIONS · RESOLUME · STREAM DECK · LIVE TIMING ·</span><span class="m-text gold" aria-hidden="true">ONE HUB · EVERY OPERATOR ·</span></div></section>
 
-    <section class="suite-section" id="suite">
-      <div class="section-intro">
-        <span class="eyebrow">THE ELEVATE SUITE</span>
-        <h2>Everything operators need.<br />Nothing fighting for attention.</h2>
-        <p>ElevateHub installs, launches, and updates focused studios while giving your team one dependable place to start.</p>
-      </div>
-      <div class="product-grid">
-        <article class="product-feature">
-          <div class="product-copy">
-            <span class="status live">AVAILABLE</span>
-            <h3>ElevateFlow</h3>
-            <p>Build presentations, run lyrics, arrange media, and send audience and stage outputs from a workspace designed for live use.</p>
-            <ul>
-              <li><i data-lucide="layers-3"></i>Flexible slide and media workflows</li>
-              <li><i data-lucide="monitor-up"></i>Audience, stage, and network outputs</li>
-              <li><i data-lucide="clock-3"></i>Timecode and production tools</li>
-            </ul>
-          </div>
-          <div class="product-image"><img src="main ui.jpeg" alt="ElevateFlow presentation workspace" loading="lazy" /></div>
-        </article>
-        <article class="product-compact amber">
-          <span class="status preview">IN DEVELOPMENT</span>
-          <div class="product-icon"><i data-lucide="aperture"></i></div>
-          <h3>ElevateVisuals</h3>
-          <p>A beginner-friendly visual performance studio built for expressive, live playback.</p>
-        </article>
-        <article class="product-compact blue">
-          <span class="status built-in">BUILT INTO HUB</span>
-          <div class="product-icon"><i data-lucide="sliders-horizontal"></i></div>
-          <h3>Operator tools</h3>
-          <p>Planning Center, Resolume control, live timing, and service tools arranged around the operator.</p>
-        </article>
-      </div>
-    </section>
+    <section class="shop-outer" id="suite"><div class="shop-header"><div><p class="section-label">The Elevate Suite</p><h2 class="section-h2">Tools with a purpose</h2></div><span class="section-count">01 — 04</span></div><div class="shop-pin" id="shopPin"><div class="shop-track" id="shopTrack">
+      <a class="p-card product-link" href="download.html"><span class="p-badge new">Available</span><div class="p-img-box landscape"><img src="main ui.jpeg" alt="ElevateFlow presentation workspace" /></div><div class="p-meta"><div><div class="p-name">ElevateFlow</div><div class="p-price">Presentations · media · outputs</div></div><div class="p-add"><i data-lucide="arrow-up-right"></i></div></div></a>
+      <a class="p-card product-link" href="support.html#stream-deck"><span class="p-badge new">Plugin</span><div class="p-img-box landscape"><img src="assets/stream-deck/01-resolume-control.png" alt="ElevateHub Resolume Control and Stream Deck" /></div><div class="p-meta"><div><div class="p-name">Resolume Control</div><div class="p-price">Sets · actions · Stream Deck</div></div><div class="p-add"><i data-lucide="arrow-up-right"></i></div></div></a>
+      <a class="p-card product-link" href="#workspace"><span class="p-badge limited">Built into Hub</span><div class="p-img-box landscape"><img src="assets/stream-deck/02-property-inspector.png" alt="ElevateHub operator controls" /></div><div class="p-meta"><div><div class="p-name">Operator Workspace</div><div class="p-price">Planning · controls · timing</div></div><div class="p-add"><i data-lucide="arrow-down"></i></div></div></a>
+      <a class="p-card cta-card" href="download.html"><div class="cta-arrow"><i data-lucide="download"></i></div><div class="cta-label">Get<br />ElevateHub</div><small>macOS + Windows</small></a>
+    </div></div></section>
 
-    <section class="kinetic-statement" aria-label="ElevateHub mission">
-      <span class="eyebrow">WHY ELEVATEHUB</span>
-      <p data-kinetic-text>Live production moves fast. Your tools should feel calm, connected, and ready before the room fills.</p>
-      <footer><i></i><span>One place to begin every production</span></footer>
-    </section>
+    <section class="manifesto-section" id="manifesto"><div class="manifesto-eyebrow">Built for the booth</div><p class="manifesto-body-text" id="manifestoText">ElevateHub exists for the people behind the screens. Every view, control, and connection is designed to reduce friction and protect focus when the room is live.</p><p class="manifesto-verse">The technology should disappear. The moment should not.</p></section>
+    <div class="stats-strip"><div class="stat"><span class="stat-num" data-target="2" data-pad="2">00</span><span class="stat-label">Desktop platforms</span></div><div class="stat"><span class="stat-num" data-target="1" data-pad="2">00</span><span class="stat-label">Connected Hub</span></div><div class="stat"><span class="stat-num" data-target="100" data-suffix="%">0</span><span class="stat-label">Operator focused</span></div></div>
 
-    <section class="workflow-story" aria-label="ElevateHub production workflow">
-      <div class="workflow-story-heading"><span class="eyebrow">ONE CONTINUOUS WORKFLOW</span><h2>From preparation<br />to the final cue.</h2><small>SCROLL TO EXPLORE</small></div>
-      <div class="workflow-story-pin">
-        <div class="workflow-story-track">
-          <article><b>01</b><i data-lucide="layout-dashboard"></i><div><span>BEGIN</span><h3>Start in the Hub</h3><p>Choose your profile and open the exact studio or operator workspace you need.</p></div></article>
-          <article><b>02</b><i data-lucide="panels-top-left"></i><div><span>PREPARE</span><h3>Build the service</h3><p>Arrange presentations, media, screens, controls, and timing before doors open.</p></div></article>
-          <article><b>03</b><i data-lucide="radio-tower"></i><div><span>OPERATE</span><h3>Stay in the moment</h3><p>Keep live controls and critical information readable while the production is moving.</p></div></article>
-          <article><b>04</b><i data-lucide="check-check"></i><div><span>RETURN</span><h3>Ready for next time</h3><p>Your operator profile keeps its personal layouts and production settings in place.</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="workspace-section" id="workspace">
-      <div class="workspace-copy">
-        <span class="eyebrow">OPERATOR WORKSPACE</span>
-        <h2>Your service, in view.</h2>
-        <p>Keep the tools you actually use beside Resolume. Switch between a portrait side workspace and a compact top layout without losing the information that matters.</p>
-        <div class="workspace-points">
-          <div><i data-lucide="calendar-days"></i><span><strong>Planning Center</strong><small>Run sheets and service plans within reach.</small></span></div>
-          <div><i data-lucide="timer"></i><span><strong>Live timing</strong><small>Compare Resolume clips and ProPresenter timers.</small></span></div>
-          <div><i data-lucide="panel-top"></i><span><strong>Saved layouts</strong><small>Shape the workspace around your screen.</small></span></div>
-        </div>
-      </div>
-      <div class="workspace-visual">
-        <div class="timing-demo">
-          <header><span>LIVE</span><b>Timing Monitor</b><em>CONNECTED</em></header>
-          <div><small>RESOLUME</small><strong>01:42</strong><span>Active clip · Layer 2</span></div>
-          <div><small>PROPRESENTER</small><strong>01:58</strong><span>Selected service timer</span></div>
-          <footer><span>PP AHEAD</span><b>+00:16</b></footer>
-        </div>
-      </div>
-    </section>
-
-    <section class="team-section" id="teams">
-      <div class="team-image"><img src="Configure screens.png" alt="ElevateFlow screen configuration" loading="lazy" /></div>
-      <div class="team-copy">
-        <span class="eyebrow">BUILT FOR REAL TEAMS</span>
-        <h2>Walk in. Pick your profile. Get to work.</h2>
-        <p>Team profiles, roles, and PIN access keep personal layouts and production settings with the right operator, even on shared computers.</p>
-        <div class="team-stats">
-          <div><strong>One Hub</strong><span>for every studio</span></div>
-          <div><strong>Separate profiles</strong><span>for every operator</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="deck-feature" id="stream-deck">
-      <div class="deck-feature-copy">
-        <span class="eyebrow">STREAM DECK PLUGIN</span>
-        <h2>Resolume control at your fingertips.</h2>
-        <p>Put your ElevateHub sets directly on Stream Deck. See live labels, move between sets, and keep every operator action clear before you press it.</p>
-        <div class="deck-feature-actions">
-          <a class="button primary" href="assets/stream-deck/ElevateHub-Plugin-v0.3.6.streamDeckPlugin" download><i data-lucide="download"></i><span>Install plugin</span></a>
-          <a class="deck-text-link" href="support.html#stream-deck">Setup guide <i data-lucide="arrow-right"></i></a>
-        </div>
-        <small>Version 0.3.6 · Requires the Stream Deck desktop app and ElevateHub</small>
-      </div>
-      <a class="deck-feature-image" href="support.html#stream-deck-gallery" aria-label="View ElevateHub Stream Deck plugin screenshots"><img src="assets/stream-deck/01-resolume-control.png" alt="ElevateHub Resolume Control beside a configured Stream Deck" loading="lazy" /></a>
-    </section>
-
-    <section class="download-band">
-      <div>
-        <span class="eyebrow">READY WHEN YOU ARE</span>
-        <h2>Bring your production into focus.</h2>
-        <p>Download ElevateHub, then install and manage ElevateFlow from one place.</p>
-      </div>
-      <a class="button primary light" href="download.html"><i data-lucide="download"></i><span>Download for free</span></a>
-    </section>
+    <section class="production-feature" id="workspace"><div class="production-feature-media"><img src="Configure screens.png" alt="ElevateFlow screen configuration" /></div><div class="production-feature-copy"><p class="section-label">Operator workspace</p><h2>Keep the service in view.</h2><p>Place Planning Center, Resolume controls, service timing, and live production information beside the software you already operate.</p><ul><li><i data-lucide="panel-right"></i><span>Portrait side workspace</span></li><li><i data-lucide="panel-top"></i><span>Compact top workspace</span></li><li><i data-lucide="timer"></i><span>Live Resolume and ProPresenter timing</span></li></ul><a class="hero-cta always-visible magnetic" href="download.html">Open the Hub <i data-lucide="arrow-right"></i></a></div></section>
+    <section class="stream-deck-callout"><div><p class="section-label">ElevateHub for Stream Deck</p><h2>Your active set.<br />Right under your hand.</h2><p>Live labels, reliable set navigation, custom key designs, and a clear offline state.</p><div class="callout-actions"><a class="hero-cta always-visible magnetic" href="assets/stream-deck/ElevateHub-Plugin-v0.3.6.streamDeckPlugin" download>Install plugin <i data-lucide="download"></i></a><a href="support.html#stream-deck">Setup guide <i data-lucide="arrow-right"></i></a></div></div><img src="assets/stream-deck/03-set-navigation.png" alt="ElevateHub set navigation on Stream Deck" /></section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-brand"><img src="elevatehub.png" alt="" /><span><strong>ElevateHub</strong><small>Live production, connected.</small></span></div>
-    <div class="footer-links"><a href="#suite">Suite</a><a href="download.html">Download</a><a href="support.html">Support</a><a href="releases.html">Release notes</a></div>
-    <p>© 2026 ElevateHub. Built by Jeremy Jarega.</p>
-  </footer>
+  <footer><div><a class="footer-logo" href="#top">ELEVATE<span class="g">HUB</span></a><p class="footer-tagline">Live production.<br />Connected.</p></div><div class="footer-col"><span class="footer-col-label">Suite</span><a href="download.html">ElevateHub</a><a href="download.html">ElevateFlow</a><a href="support.html#stream-deck">Stream Deck</a></div><div class="footer-col"><span class="footer-col-label">Help</span><a href="support.html">Support</a><a href="releases.html">Releases</a><a href="download.html">Installation</a></div><div class="footer-col"><span class="footer-col-label">Platform</span><a href="download.html">macOS</a><a href="download.html">Windows</a></div><div class="footer-bottom"><p class="footer-copy">© 2026 ElevateHub. All rights reserved.</p><p class="footer-copy">Built by Jeremy Jarega · Australia</p></div></footer>
 
-  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script src="site.js"></script>
-  <script src="motion.js"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script><script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script><script src="site.js"></script><script src="elevate-experience.js"></script>
 </body>
 </html>
