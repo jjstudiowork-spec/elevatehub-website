@@ -5,7 +5,7 @@ function initializePreloader() {
   document.body.classList.add('preloading');
   const loader = document.createElement('div');
   loader.className = 'motion-preloader';
-  loader.innerHTML = '<div class="motion-preloader-panel"></div><div class="motion-preloader-panel"></div><div class="motion-preloader-content"><img src="elevatehub.png" alt=""><strong class="motion-preloader-count">000</strong><div class="motion-preloader-line"><i></i></div><span class="motion-preloader-label">PREPARING THE HUB</span></div>';
+  loader.innerHTML = '<div class="motion-preloader-panel"></div><div class="motion-preloader-panel"></div><div class="motion-preloader-content"><img src="/elevatehub.png" alt=""><strong class="motion-preloader-count">000</strong><div class="motion-preloader-line"><i></i></div><span class="motion-preloader-label">PREPARING THE HUB</span></div>';
   document.body.append(loader);
   const count = loader.querySelector('.motion-preloader-count');
   const line = loader.querySelector('.motion-preloader-line i');
