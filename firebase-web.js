@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js';
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
+import { browserLocalPersistence, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
 import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 
 const app = initializeApp({
@@ -12,10 +12,14 @@ const app = initializeApp({
 });
 
 const auth = getAuth(app);
+const authReady = setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.warn('[ElevateHub] Persistent sign-in is unavailable in this browser:', error);
+});
 const db = getFirestore(app);
 
 export {
   auth,
+  authReady,
   db,
   createUserWithEmailAndPassword,
   doc,

@@ -1,4 +1,4 @@
-import { auth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword } from './firebase-web.js';
+import { auth, authReady, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword } from './firebase-web.js';
 
 const form = document.querySelector('[data-login-form]');
 const message = document.querySelector('[data-auth-message]');
@@ -34,9 +34,9 @@ const authErrorMessage = (error, action = 'sign in') => {
   }
 };
 
-onAuthStateChanged(auth, (user) => {
+authReady.then(() => onAuthStateChanged(auth, (user) => {
   if (user && !submitted) location.replace(next);
-});
+}));
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -47,6 +47,7 @@ form.addEventListener('submit', async (event) => {
   submitted = true;
 
   try {
+    await authReady;
     await signInWithEmailAndPassword(auth, form.email.value.trim(), form.password.value);
     location.replace(next);
   } catch (error) {

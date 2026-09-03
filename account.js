@@ -1,4 +1,4 @@
-import { auth, db, doc, getDoc, onAuthStateChanged, signOut } from './firebase-web.js';
+import { auth, authReady, db, doc, getDoc, onAuthStateChanged, signOut } from './firebase-web.js';
 
 const view = document.querySelector('[data-profile-view]');
 const loading = document.querySelector('[data-account-loading]');
@@ -150,7 +150,7 @@ async function show(user) {
   showPrivateBetas(user).catch((error) => console.warn('[ElevateHub] Private betas could not load:', error));
 }
 
-onAuthStateChanged(auth, (user) => {
+authReady.then(() => onAuthStateChanged(auth, (user) => {
   if (!user) {
     location.replace('login.html?next=account.html');
     return;
@@ -160,4 +160,4 @@ onAuthStateChanged(auth, (user) => {
     loading.querySelector('strong').textContent = 'Account could not load';
     loading.querySelector('p').textContent = 'Check your connection and refresh this page.';
   });
-});
+}));
