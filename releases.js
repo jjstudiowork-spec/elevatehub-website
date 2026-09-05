@@ -61,22 +61,28 @@ async function loadReleaseHistory() {
   const loading = document.querySelector('[data-releases-loading]');
   const errorState = document.querySelector('[data-releases-error]');
   if (!list) return;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 10000);
   try {
-    const response = await fetch(RELEASES_API, { headers: { Accept: 'application/vnd.github+json' } });
+    const response = await fetch(RELEASES_API, {
+      headers: { Accept: 'application/vnd.github+json' },
+      signal: controller.signal,
+    });
     if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
     const releases = await response.json();
     if (!Array.isArray(releases) || !releases.length) throw new Error('No releases returned');
     releases.forEach((release, index) => list.append(makeReleaseCard(release, index)));
-    loading.hidden = true;
     initializeIcons();
     requestAnimationFrame(() => requestAnimationFrame(() => {
       list.querySelectorAll('.release-card').forEach((card) => card.classList.add('motion-visible'));
     }));
   } catch (error) {
     console.warn('[ElevateHub site] Could not load release history:', error);
-    loading.hidden = true;
     errorState.hidden = false;
     initializeIcons();
+  } finally {
+    window.clearTimeout(timeout);
+    if (loading) loading.hidden = true;
   }
 }
 

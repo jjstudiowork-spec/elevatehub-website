@@ -207,7 +207,6 @@ initializeProgress();
 initializeReveals();
 initializeHeroParallax();
 initializeMagneticButtons();
-initializeCursor();
 initializePageTransitions();
 initializeKineticText();
 initializeWorkflowStory();

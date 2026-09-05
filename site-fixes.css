@@ -1,0 +1,49 @@
+/* Shared interaction and installer refinements. */
+body { cursor: default !important; }
+a, button, summary, [role="button"] { cursor: pointer !important; }
+input, textarea { cursor: text !important; }
+#cur-dot, #cur-ring, .motion-cursor-dot, .motion-cursor-ring { display: none !important; }
+.release-loading[hidden], .release-error[hidden] { display: none !important; }
+
+.ndi-runtime {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 13px;
+  border: 1px solid #d2d5d2;
+  border-radius: 6px;
+  background: #eceeea;
+}
+.ndi-runtime > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: #111417;
+  color: var(--gold);
+}
+.ndi-runtime > span svg { width: 17px; }
+.ndi-runtime div { display: grid; gap: 3px; }
+.ndi-runtime strong { font: 700 12px Manrope, sans-serif; }
+.ndi-runtime small { color: #6d7479; font-size: 9px; line-height: 1.4; }
+.ndi-runtime a {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  border-radius: 5px;
+  background: #111417;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.ndi-runtime a svg { width: 13px; }
+@media (max-width: 560px) {
+  .ndi-runtime { grid-template-columns: auto 1fr; }
+  .ndi-runtime a { grid-column: 1 / -1; justify-content: center; }
+}

@@ -6,6 +6,22 @@ function initializeIcons() {
   if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.8 } });
 }
 
+async function initializeAccountNavigation() {
+  try {
+    const { auth, authReady, onAuthStateChanged } = await import('./firebase-web.js');
+    await authReady;
+    onAuthStateChanged(auth, (user) => {
+      document.querySelectorAll('a[href="login.html"], a[href="/login.html"]').forEach((link) => {
+        link.href = user ? 'account.html' : 'login.html';
+        link.textContent = user ? 'Account' : 'Sign In';
+        link.removeAttribute('data-scramble');
+      });
+    });
+  } catch (error) {
+    console.warn('[ElevateHub site] Could not restore account navigation:', error);
+  }
+}
+
 function chooseAsset(assets, platform) {
   const usable = assets.filter((asset) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json');
   if (platform === 'mac') return usable.find((asset) => /\.dmg$/i.test(asset.name) && /universal|aarch64|x64/i.test(asset.name)) || usable.find((asset) => /\.dmg$/i.test(asset.name));
@@ -92,6 +108,7 @@ document.querySelector('[data-copy-command]')?.addEventListener('click', async (
 });
 
 initializeIcons();
+initializeAccountNavigation();
 loadRelease();
 loadReleaseStatus();
 

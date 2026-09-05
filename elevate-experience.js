@@ -129,7 +129,6 @@ function toggleMenu() {
 window.toggleMenu = toggleMenu;
 
 initializeSmoothScroll();
-initializeCursor();
 initializeMagnetic();
 initializeScrollScenes();
 initializeScramble();
