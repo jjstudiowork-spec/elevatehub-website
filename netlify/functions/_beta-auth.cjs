@@ -21,12 +21,13 @@ async function authenticatedEmail(event) {
   return email;
 }
 
-async function github(path, accept = 'application/vnd.github+json', redirect = 'follow') {
+async function github(path, accept = 'application/vnd.github+json', redirect = 'follow', method = 'GET') {
   const token = process.env.ELEVATE_PRIVATE_REPO_TOKEN;
   if (!token) throw Object.assign(new Error('Private beta downloads are not configured.'), { statusCode: 503 });
   return fetch(`https://api.github.com/repos/${REPOSITORY}${path}`, {
     headers: { Accept: accept, Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28' },
     redirect,
+    method,
   });
 }
 

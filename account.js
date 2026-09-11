@@ -13,6 +13,10 @@ const initials = (name) => (name || 'Elevate User')
   .map((part) => part[0])
   .join('')
   .toUpperCase();
+const HEAD_ADMIN_EMAIL = 'jjstudiowork@gmail.com';
+const betaAdminStyle = document.createElement('style');
+betaAdminStyle.textContent = `.beta-admin{margin-top:22px;padding:22px;border:1px solid rgba(212,175,55,.2);border-radius:8px;background:rgba(212,175,55,.035)}.beta-admin header span,.beta-admin label{color:#c9a65f;font:700 9px "Space Mono",monospace;letter-spacing:1px}.beta-admin h2{margin:6px 0;font-size:21px}.beta-admin header p,.beta-admin-card-head small,.beta-admin-empty{color:#8b8b93;font-size:12px}.beta-admin-list{display:grid;gap:10px;margin-top:16px}.beta-admin article{padding:14px;border:1px solid rgba(255,255,255,.09);border-radius:7px;background:rgba(9,10,13,.68)}.beta-admin-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.beta-admin-card-head>div{display:grid;gap:4px}.beta-admin-card-head span{color:#e4c46b;font:700 10px "Space Mono",monospace}.beta-admin-card-head strong{font-size:13px}.beta-admin-card-head b{padding:5px 7px;border-radius:4px;background:rgba(212,175,55,.12);color:#e7c76f;font-size:10px}.beta-admin article>p{margin:11px 0;color:#b1b1b9;font-size:12px;line-height:1.45}.beta-admin label{display:grid;gap:6px}.beta-admin textarea{min-height:52px;resize:vertical;padding:9px;border:1px solid rgba(255,255,255,.12);border-radius:6px;outline:0;background:#0a0b0e;color:#e9e9ed;font:11px/1.45 "Space Mono",monospace}.beta-admin footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}.beta-admin footer small{color:#93939d;font-size:10px}.beta-admin button{height:31px;padding:0 11px;border:1px solid rgba(212,175,55,.4);border-radius:6px;background:rgba(212,175,55,.13);color:#eccf79;font-weight:700;cursor:pointer}.beta-admin button:disabled{opacity:.5}`;
+document.head.appendChild(betaAdminStyle);
 
 function currentDevice() {
   const ua = navigator.userAgent;
@@ -107,6 +111,38 @@ async function showPrivateBetas(user) {
   document.querySelector('.profile-view').appendChild(section);
 }
 
+async function showBetaAdmin(user) {
+  if (user.email?.toLowerCase() !== HEAD_ADMIN_EMAIL) return;
+  const response = await fetch('/.netlify/functions/beta-admin', { headers: { Authorization: `Bearer ${await user.getIdToken()}` }, cache: 'no-store' });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || 'Could not load beta access.');
+  const section = document.createElement('section');
+  section.className = 'beta-admin';
+  section.innerHTML = '<header><div><span>BETA ACCESS</span><h2>Private release control</h2><p>Choose who can install each completed ElevateHub beta.</p></div></header><div class="beta-admin-list"></div>';
+  const list = section.querySelector('.beta-admin-list');
+  if (!payload.releases?.length) list.innerHTML = '<p class="beta-admin-empty">No completed private beta builds yet.</p>';
+  payload.releases?.forEach((release) => {
+    const card = document.createElement('article');
+    const date = release.publishedAt ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(release.publishedAt)) : 'Recently built';
+    card.innerHTML = `<div class="beta-admin-card-head"><div><span>v${esc(release.version)}</span><strong>${esc(release.products === 'hub' ? 'ElevateHub' : release.products)} · ${esc(release.platforms)}</strong><small>${esc(date)}</small></div><b>${release.testers.length} tester${release.testers.length === 1 ? '' : 's'}</b></div><p>${esc(release.notes || 'Private testing build.')}</p><label>APPROVED EMAILS<textarea>${esc(release.testers.join(', '))}</textarea></label><footer><small></small><button type="button">Save access</button></footer>`;
+    const textarea = card.querySelector('textarea');
+    const status = card.querySelector('footer small');
+    card.querySelector('button').addEventListener('click', async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true; status.textContent = 'Saving...';
+      try {
+        const save = await fetch('/.netlify/functions/beta-admin', { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${await user.getIdToken()}` }, body: JSON.stringify({ releaseId: release.id, testers: textarea.value.split(',') }) });
+        const saved = await save.json().catch(() => ({}));
+        if (!save.ok) throw new Error(saved.error || 'Could not save access.');
+        textarea.value = saved.testers.join(', '); status.textContent = 'Saved. Testers can check for this beta now.';
+      } catch (error) { status.textContent = error.message; }
+      finally { button.disabled = false; }
+    });
+    list.appendChild(card);
+  });
+  document.querySelector('.profile-view').appendChild(section);
+}
+
 document.querySelector('[data-sign-out]').addEventListener('click', async () => {
   await signOut(auth);
   location.replace('login.html');
@@ -148,6 +184,7 @@ async function show(user) {
   loading.hidden = true;
   view.hidden = false;
   showPrivateBetas(user).catch((error) => console.warn('[ElevateHub] Private betas could not load:', error));
+  showBetaAdmin(user).catch((error) => console.warn('[ElevateHub] Beta administration could not load:', error));
 }
 
 authReady.then(() => onAuthStateChanged(auth, (user) => {
