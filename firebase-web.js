@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js';
-import { browserLocalPersistence, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
-import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
+import { browserLocalPersistence, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, reload, sendEmailVerification, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signOut, updateProfile, verifyBeforeUpdateEmail } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js';
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 
 const app = initializeApp({
   apiKey: 'AIzaSyB0tMWZELsbEkHwxpyYLHBGoXjjv6w0lNI',
@@ -18,17 +18,27 @@ const authReady = setPersistence(auth, browserLocalPersistence).catch((error) =>
 const db = getFirestore(app);
 
 export {
+  addDoc,
   auth,
   authReady,
+  collection,
   db,
   createUserWithEmailAndPassword,
   doc,
   getDoc,
+  getDocs,
   onAuthStateChanged,
+  onSnapshot,
+  query,
+  reload,
+  sendEmailVerification,
   sendPasswordResetEmail,
   serverTimestamp,
   setDoc,
   signInWithEmailAndPassword,
   signOut,
+  updateDoc,
   updateProfile,
+  verifyBeforeUpdateEmail,
+  where,
 };

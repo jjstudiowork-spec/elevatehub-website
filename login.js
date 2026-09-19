@@ -4,6 +4,45 @@ const form = document.querySelector('[data-login-form]');
 const message = document.querySelector('[data-auth-message]');
 const next = new URLSearchParams(location.search).get('next') || 'account.html';
 let submitted = false;
+const REMEMBERED_ACCOUNTS_KEY = 'elevatehub.rememberedAccounts';
+const escapeHtml = (value) => {
+  const node = document.createElement('span');
+  node.textContent = String(value || '');
+  return node.innerHTML;
+};
+
+function rememberedAccounts() {
+  try { return JSON.parse(localStorage.getItem(REMEMBERED_ACCOUNTS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function rememberAccount(user) {
+  const email = String(user.email || '').trim().toLowerCase();
+  if (!email) return;
+  const accounts = rememberedAccounts().filter((account) => account.email !== email);
+  accounts.unshift({ email, name: user.displayName || email.split('@')[0] });
+  localStorage.setItem(REMEMBERED_ACCOUNTS_KEY, JSON.stringify(accounts.slice(0, 6)));
+}
+
+function renderAccountChooser() {
+  const chooser = document.querySelector('[data-account-chooser]');
+  const accounts = rememberedAccounts();
+  chooser.hidden = !accounts.length;
+  chooser.innerHTML = accounts.map((account) => {
+    const email = escapeHtml(account.email);
+    const name = escapeHtml(account.name || account.email.split('@')[0]);
+    const initial = escapeHtml(String(account.name || account.email).slice(0, 1).toUpperCase());
+    return `<div class="remembered-account"><button type="button" data-remembered-email="${email}"><b>${initial}</b><span><strong>${name}</strong><small>${email}</small></span></button><button type="button" data-forget-email="${email}" aria-label="Forget ${email}">×</button></div>`;
+  }).join('');
+  chooser.querySelectorAll('[data-remembered-email]').forEach((button) => button.addEventListener('click', () => {
+    form.email.value = button.dataset.rememberedEmail;
+    form.password.focus();
+  }));
+  chooser.querySelectorAll('[data-forget-email]').forEach((button) => button.addEventListener('click', () => {
+    localStorage.setItem(REMEMBERED_ACCOUNTS_KEY, JSON.stringify(rememberedAccounts().filter((account) => account.email !== button.dataset.forgetEmail)));
+    renderAccountChooser();
+  }));
+}
 
 const show = (text, success = false) => {
   message.textContent = text;
@@ -35,7 +74,7 @@ const authErrorMessage = (error, action = 'sign in') => {
 };
 
 authReady.then(() => onAuthStateChanged(auth, (user) => {
-  if (user && !submitted) location.replace(next);
+  if (user && !submitted) location.replace(user.emailVerified ? next : 'verify-email.html');
 }));
 
 form.addEventListener('submit', async (event) => {
@@ -48,8 +87,9 @@ form.addEventListener('submit', async (event) => {
 
   try {
     await authReady;
-    await signInWithEmailAndPassword(auth, form.email.value.trim(), form.password.value);
-    location.replace(next);
+    const credential = await signInWithEmailAndPassword(auth, form.email.value.trim(), form.password.value);
+    rememberAccount(credential.user);
+    location.replace(credential.user.emailVerified ? next : 'verify-email.html');
   } catch (error) {
     submitted = false;
     show(authErrorMessage(error));
@@ -70,3 +110,5 @@ document.querySelector('[data-auth-reset]').addEventListener('click', async () =
     show(authErrorMessage(error, 'send the reset email'));
   }
 });
+
+renderAccountChooser();

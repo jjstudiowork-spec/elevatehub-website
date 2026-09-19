@@ -1,4 +1,4 @@
-const RELEASES_API = 'https://api.github.com/repos/jjstudiowork-spec/elevatehub-downloads/releases?per_page=10';
+const RELEASES_API = '/updates/history.json';
 
 function formatReleaseDate(value) {
   if (!value) return 'Date unavailable';
@@ -10,6 +10,19 @@ function classifyAsset(asset) {
   if (name.endsWith('.dmg') || name.endsWith('.pkg')) return { label: 'Download for macOS', icon: 'laptop' };
   if (name.endsWith('.exe') || name.endsWith('.msi')) return { label: 'Download for Windows', icon: 'monitor' };
   return null;
+}
+
+function releaseFromWebsite(entry) {
+  return {
+    tag_name: `v${entry.version || 'latest'}`,
+    name: `ElevateHub v${entry.version || 'latest'}`,
+    published_at: entry.publishedAt,
+    body: entry.notes,
+    assets: Object.values(entry.installers || {}).map((installer) => ({
+      name: new URL(installer.url, window.location.origin).pathname.split('/').pop() || 'installer',
+      browser_download_url: installer.url,
+    })),
+  };
 }
 
 function makeReleaseCard(release, index) {
@@ -64,12 +77,10 @@ async function loadReleaseHistory() {
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 10000);
   try {
-    const response = await fetch(RELEASES_API, {
-      headers: { Accept: 'application/vnd.github+json' },
-      signal: controller.signal,
-    });
-    if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
-    const releases = await response.json();
+    const response = await fetch(`${RELEASES_API}?t=${Date.now()}`, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) throw new Error(`Website release history returned ${response.status}`);
+    const history = await response.json();
+    const releases = Array.isArray(history) ? history.map(releaseFromWebsite) : [];
     if (!Array.isArray(releases) || !releases.length) throw new Error('No releases returned');
     releases.forEach((release, index) => list.append(makeReleaseCard(release, index)));
     initializeIcons();

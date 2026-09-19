@@ -116,7 +116,7 @@ function initializeScramble() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   document.querySelectorAll('[data-scramble]').forEach((item) => {
     const original = item.textContent;
-    item.addEventListener('mouseenter', () => { let iteration = 0; const timer = setInterval(() => { item.textContent = [...original].map((char, index) => index < iteration ? original[index] : chars[Math.floor(Math.random() * chars.length)]).join(''); iteration += 1; if (iteration > original.length) clearInterval(timer); }, 42); });
+    item.addEventListener('mouseenter', () => { if (!item.hasAttribute('data-scramble')) return; let iteration = 0; const timer = setInterval(() => { item.textContent = [...original].map((char, index) => index < iteration ? original[index] : chars[Math.floor(Math.random() * chars.length)]).join(''); iteration += 1; if (iteration > original.length) clearInterval(timer); }, 42); });
   });
 }
 

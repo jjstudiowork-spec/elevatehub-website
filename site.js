@@ -1,6 +1,6 @@
-const RELEASE_API = 'https://api.github.com/repos/jjstudiowork-spec/elevatehub-downloads/releases/latest';
+const WEBSITE_RELEASE_API = '/updates/release.json';
 const RELEASE_PAGE = 'releases.html';
-const RELEASE_STATUS_URL = 'https://raw.githubusercontent.com/jjstudiowork-spec/elevatehub-downloads/main/release-status.json';
+const RELEASE_STATUS_URL = '/updates/build-status.json';
 
 function initializeIcons() {
   if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.8 } });
@@ -8,14 +8,26 @@ function initializeIcons() {
 
 async function initializeAccountNavigation() {
   try {
-    const { auth, authReady, onAuthStateChanged } = await import('./firebase-web.js');
+    const { auth, authReady, db, doc, getDoc, onAuthStateChanged } = await import('./firebase-web.js');
     await authReady;
-    onAuthStateChanged(auth, (user) => {
-      document.querySelectorAll('a[href="login.html"], a[href="/login.html"]').forEach((link) => {
+    onAuthStateChanged(auth, async (user) => {
+      document.querySelectorAll('[data-account-link]').forEach((link) => {
         link.href = user ? 'account.html' : 'login.html';
         link.textContent = user ? 'Account' : 'Sign In';
         link.removeAttribute('data-scramble');
       });
+      document.querySelectorAll('[data-register-link]').forEach((link) => { link.hidden = Boolean(user); });
+      const dashboardLinks = document.querySelectorAll('[data-release-dashboard-link]');
+      let canManageReleases = String(user?.email || '').toLowerCase() === 'jjstudiowork@gmail.com';
+      if (user && !canManageReleases) {
+        try {
+          const access = await getDoc(doc(db, 'elevateReleaseControl', 'admins'));
+          canManageReleases = access.exists() && (access.data().emails || []).includes(String(user.email || '').toLowerCase());
+        } catch (error) {
+          console.warn('[ElevateHub site] Release access could not be checked:', error);
+        }
+      }
+      dashboardLinks.forEach((link) => { link.hidden = !canManageReleases; });
     });
   } catch (error) {
     console.warn('[ElevateHub site] Could not restore account navigation:', error);
@@ -45,7 +57,7 @@ async function loadReleaseStatus() {
     if (!response.ok) throw new Error(`Status returned ${response.status}`);
     const status = await response.json();
     const isBuilding = status.status === 'building';
-    const completedAt = status.finishedAt ? new Date(status.finishedAt).getTime() : 0;
+    const completedAt = status.finishedAt ? new Date(status.finishedAt).getTime() : new Date(status.updatedAt || 0).getTime();
     const isRecent = completedAt && Date.now() - completedAt < 24 * 60 * 60 * 1000;
     banners.forEach((banner) => {
       if (!isBuilding && !(banner.dataset.showCompleted === 'true' && isRecent)) return;
@@ -55,7 +67,7 @@ async function loadReleaseStatus() {
       const time = banner.querySelector('[data-release-status-time]');
       if (title) title.textContent = isBuilding ? `${status.version} is building now` : status.status === 'released' ? `${status.version} is available` : `${status.version} build failed`;
       if (message) message.textContent = status.message || (isBuilding ? 'Building macOS and Windows releases' : 'Release status updated');
-      if (time) time.textContent = relativeTime(isBuilding ? status.startedAt : status.finishedAt);
+      if (time) time.textContent = relativeTime(isBuilding ? status.startedAt : (status.finishedAt || status.updatedAt));
       banner.hidden = false;
     });
     if (isBuilding) window.setTimeout(loadReleaseStatus, 30000);
@@ -66,27 +78,29 @@ async function loadReleaseStatus() {
 
 async function loadRelease() {
   try {
-    const response = await fetch(RELEASE_API, { headers: { Accept: 'application/vnd.github+json' } });
-    if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+    const response = await fetch(`${WEBSITE_RELEASE_API}?t=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Website release returned ${response.status}`);
     const release = await response.json();
-    document.querySelectorAll('[data-release-version]').forEach((node) => { node.textContent = release.tag_name || 'Latest release'; });
-    const mac = chooseAsset(release.assets || [], 'mac');
-    const windows = chooseAsset(release.assets || [], 'windows');
-    document.querySelectorAll('[data-mac-download]').forEach((link) => { link.href = mac?.browser_download_url || RELEASE_PAGE; });
-    document.querySelectorAll('[data-windows-download]').forEach((link) => { link.href = windows?.browser_download_url || RELEASE_PAGE; });
+    const installers = Object.entries(release.installers || {});
+    const mac = installers.find(([target]) => target.startsWith('darwin-'))?.[1];
+    const windows = installers.find(([target]) => target.startsWith('windows-'))?.[1];
+    if (!mac && !windows) throw new Error('Website release has no installers');
+    document.querySelectorAll('[data-release-version]').forEach((node) => { node.textContent = `v${release.version}`; });
+    document.querySelectorAll('[data-mac-download]').forEach((link) => { link.href = mac?.url || RELEASE_PAGE; });
+    document.querySelectorAll('[data-windows-download]').forEach((link) => { link.href = windows?.url || RELEASE_PAGE; });
     const isMac = /Mac|iPhone|iPad/.test(navigator.platform) || /Mac OS/.test(navigator.userAgent);
     const asset = isMac ? mac : windows;
     const primary = document.querySelector('[data-primary-download]');
     const note = document.querySelector('[data-download-note]');
     if (primary) {
-      primary.href = asset?.browser_download_url || RELEASE_PAGE;
+      primary.href = asset?.url || RELEASE_PAGE;
       primary.querySelector('span').textContent = asset ? `Download for ${isMac ? 'macOS' : 'Windows'}` : 'View latest downloads';
     }
-    if (note) note.textContent = asset ? `${release.tag_name} · ${isMac ? 'Universal macOS build' : '64-bit Windows installer'}` : 'Choose your installer from the latest GitHub release.';
+    if (note) note.textContent = asset ? `v${release.version} · ${isMac ? 'macOS installer' : '64-bit Windows installer'}` : 'Choose your installer from the latest release.';
   } catch (error) {
-    console.warn('[ElevateHub site] Could not load release metadata:', error);
+    console.warn('[ElevateHub site] Could not load website release metadata:', error);
     const note = document.querySelector('[data-download-note]');
-    if (note) note.textContent = 'Open the latest GitHub release to choose your download.';
+    if (note) note.textContent = 'The next ElevateHub release is being prepared.';
   }
 }
 
