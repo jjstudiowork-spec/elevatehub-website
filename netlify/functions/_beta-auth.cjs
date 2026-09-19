@@ -17,8 +17,9 @@ async function authenticatedUser(event) {
   });
   const payload = await response.json();
   const email = payload.users?.[0]?.email?.toLowerCase();
+  const uid = payload.users?.[0]?.localId;
   if (!response.ok || !email) throw Object.assign(new Error('Your ElevateHub session has expired.'), { statusCode: 401 });
-  return { email, token };
+  return { email, token, uid };
 }
 
 async function authenticatedEmail(event) {
