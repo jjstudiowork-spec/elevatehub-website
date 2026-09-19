@@ -25,6 +25,7 @@ let agentOnline = false;
 let agentReady = false;
 let releaseEngine = 'auto';
 let githubAvailable = false;
+let githubReason = '';
 
 function renderEngine() {
   engineControl.querySelectorAll('[data-engine]').forEach(button => {
@@ -34,7 +35,7 @@ function renderEngine() {
   engineStatus.textContent = releaseEngine === 'auto'
     ? `Auto will use ${githubAvailable ? 'GitHub' : 'ElevateRelease'} right now.`
     : releaseEngine === 'github'
-      ? (githubAvailable ? 'GitHub Actions is available.' : 'GitHub Actions is currently unavailable.')
+      ? (githubReason || (githubAvailable ? 'GitHub Actions is available.' : 'GitHub Actions is currently unavailable.'))
       : 'Builds and publishes on the trusted developer computer.';
 }
 
@@ -99,6 +100,7 @@ async function refreshControl() {
   try {
     const payload = await controlApi();
     githubAvailable = Boolean(payload.github?.available);
+    githubReason = payload.github?.reason || '';
     agentOnline = Boolean(payload.agent?.online);
     const agentBusy = Boolean(payload.agent?.busy);
     agentReady = agentOnline && !agentBusy;

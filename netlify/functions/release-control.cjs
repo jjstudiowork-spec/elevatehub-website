@@ -28,14 +28,32 @@ function issueData(issue) {
 
 async function githubAvailability() {
   try {
-    const [permissions, workflow] = await Promise.all([
+    const [permissions, workflow, runs] = await Promise.all([
       github('/actions/permissions'),
       github('/actions/workflows/release.yml'),
+      github('/actions/workflows/release.yml/runs?per_page=1'),
     ]);
     const permissionsData = permissions.ok ? await permissions.json() : {};
     const workflowData = workflow.ok ? await workflow.json() : {};
-    const available = permissions.ok && workflow.ok && permissionsData.enabled !== false && workflowData.state === 'active';
-    return { available, reason: available ? 'GitHub Actions is available.' : 'GitHub Actions or the release workflow is unavailable.' };
+    const runsData = runs.ok ? await runs.json() : {};
+    let runnersAvailable = true;
+    const latestRun = runsData.workflow_runs?.[0];
+    if (latestRun?.conclusion === 'failure') {
+      const jobsResponse = await github(`/actions/runs/${latestRun.id}/jobs?per_page=100`);
+      if (jobsResponse.ok) {
+        const jobs = (await jobsResponse.json()).jobs || [];
+        runnersAvailable = !jobs.some(job => job.conclusion === 'failure' && (!job.steps || job.steps.length === 0));
+      }
+    }
+    const available = permissions.ok && workflow.ok && runs.ok && permissionsData.enabled !== false && workflowData.state === 'active' && runnersAvailable;
+    return {
+      available,
+      reason: available
+        ? 'GitHub Actions is available.'
+        : !runnersAvailable
+          ? 'GitHub Actions runners or usage are currently unavailable.'
+          : 'GitHub Actions or the release workflow is unavailable.',
+    };
   } catch {
     return { available: false, reason: 'GitHub could not be reached.' };
   }
