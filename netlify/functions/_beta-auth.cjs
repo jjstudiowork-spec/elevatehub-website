@@ -7,9 +7,9 @@ const json = (statusCode, body) => ({
   body: JSON.stringify(body),
 });
 
-async function authenticatedEmail(event) {
+async function authenticatedUser(event) {
   const token = (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer\s+/i, '');
-  if (!token) throw Object.assign(new Error('Sign in to check private beta access.'), { statusCode: 401 });
+  if (!token) throw Object.assign(new Error('Sign in to continue.'), { statusCode: 401 });
   const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -18,16 +18,21 @@ async function authenticatedEmail(event) {
   const payload = await response.json();
   const email = payload.users?.[0]?.email?.toLowerCase();
   if (!response.ok || !email) throw Object.assign(new Error('Your ElevateHub session has expired.'), { statusCode: 401 });
-  return email;
+  return { email, token };
 }
 
-async function github(path, accept = 'application/vnd.github+json', redirect = 'follow', method = 'GET') {
+async function authenticatedEmail(event) {
+  return (await authenticatedUser(event)).email;
+}
+
+async function github(path, accept = 'application/vnd.github+json', redirect = 'follow', method = 'GET', body) {
   const token = process.env.ELEVATE_PRIVATE_REPO_TOKEN;
   if (!token) throw Object.assign(new Error('Private beta downloads are not configured.'), { statusCode: 503 });
   return fetch(`https://api.github.com/repos/${REPOSITORY}${path}`, {
-    headers: { Accept: accept, Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28' },
+    headers: { Accept: accept, Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
     redirect,
     method,
+    ...(body === undefined ? {} : { body }),
   });
 }
 
@@ -40,4 +45,4 @@ async function accessForRelease(release, email) {
   return access.testers?.map(value => value.toLowerCase()).includes(email) ? access : null;
 }
 
-module.exports = { REPOSITORY, accessForRelease, authenticatedEmail, github, json };
+module.exports = { REPOSITORY, accessForRelease, authenticatedEmail, authenticatedUser, github, json };

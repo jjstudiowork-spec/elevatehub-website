@@ -12,6 +12,19 @@ const time = document.querySelector('[data-release-time]');
 const steps = document.querySelector('[data-release-steps]');
 const agentState = document.querySelector('[data-agent-state]');
 const agentCopy = document.querySelector('[data-agent-copy]');
+const requestButton = document.querySelector('[data-request-release]');
+const platformSelect = document.querySelector('[data-release-platform]');
+const channelSelect = document.querySelector('[data-release-channel]');
+const feedback = document.querySelector('[data-dashboard-feedback]');
+const requestList = document.querySelector('[data-release-requests]');
+const refreshButton = document.querySelector('[data-refresh-dashboard]');
+let currentUser = null;
+let agentOnline = false;
+let agentReady = false;
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+}
 
 function formatTime(value) {
   const date = new Date(value || 0);
@@ -27,9 +40,6 @@ function render(payload = {}) {
   state.dataset.state = buildState;
   message.textContent = payload.message || 'The dashboard will show each local build step here when a release starts.';
   time.textContent = formatTime(payload.updatedAt || payload.startedAt);
-  const active = buildState === 'building';
-  agentState.textContent = active ? 'VS Code agent is building' : buildState === 'released' ? 'Last release completed' : buildState === 'failed' ? 'Build needs attention' : 'Standing by';
-  agentCopy.textContent = active ? 'The local Toolkit is publishing a real release now.' : 'Open VS Code with the ElevateHub Toolkit when you are ready to publish.';
   const list = Array.isArray(payload.steps) ? payload.steps : [];
   steps.innerHTML = list.length ? list.map((step) => `<li class="${step.state || 'pending'}"><i></i><span>${step.label || step.id}</span><b>${String(step.state || 'pending').toUpperCase()}</b></li>`).join('') : '<li class="pending"><i></i><span>Waiting for a local release</span><b>READY</b></li>';
 }
@@ -42,6 +52,81 @@ async function refresh() {
     render({});
   }
 }
+
+async function controlApi(method = 'GET', payload) {
+  const token = await currentUser.getIdToken();
+  const response = await fetch('/.netlify/functions/release-control', {
+    method,
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    ...(payload ? { body: JSON.stringify(payload) } : {}),
+    cache: 'no-store',
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(body.error || 'Release control is unavailable.');
+  return body;
+}
+
+function renderRequests(requests = []) {
+  if (!requests.length) {
+    requestList.innerHTML = '<p>No website release requests yet.</p>';
+    return;
+  }
+  requestList.innerHTML = requests.map(item => {
+    const cancellable = ['queued', 'claimed'].includes(item.status);
+    const retryable = ['failed', 'cancelled'].includes(item.status);
+    const date = new Date(item.updatedAt || item.requestedAt || 0);
+    return `<article class="request-row" data-status="${esc(item.status)}"><div><header><b>${esc(item.platform === 'windows' ? 'Windows' : 'macOS')} ${esc(item.channel)}</b><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></div><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? `<button type="button" data-action="retry" data-platform="${esc(item.platform)}" data-channel="${esc(item.channel)}">Retry</button>` : ''}</div></article>`;
+  }).join('');
+}
+
+async function refreshControl() {
+  try {
+    const payload = await controlApi();
+    agentOnline = Boolean(payload.agent?.online);
+    const agentBusy = Boolean(payload.agent?.busy);
+    agentReady = agentOnline && !agentBusy;
+    const agentPlatform = payload.agent?.platform;
+    [...platformSelect.options].forEach(option => { option.disabled = agentOnline && Boolean(agentPlatform) && option.value !== agentPlatform; });
+    if (agentOnline && agentPlatform) platformSelect.value = agentPlatform;
+    requestButton.disabled = !agentReady;
+    agentState.textContent = agentOnline ? `${payload.agent.name || 'Developer computer'} ${agentBusy ? 'building' : 'online'}` : 'Developer computer offline';
+    agentCopy.textContent = agentOnline ? `Release agent ${agentBusy ? 'is handling a release' : 'is ready'}${agentPlatform ? ` on ${agentPlatform}` : ''}.` : 'Open VS Code with the ElevateHub Toolkit on the trusted computer.';
+    document.querySelector('[data-request-help]').textContent = agentOnline ? (agentBusy ? 'Another release is currently running.' : 'The agent is ready to accept a local build.') : 'The controls unlock while the VS Code release agent is online.';
+    renderRequests(payload.requests);
+  } catch (error) {
+    requestButton.disabled = true;
+    feedback.textContent = error.message;
+  }
+}
+
+async function createRequest(platform = platformSelect.value, channel = channelSelect.value) {
+  requestButton.disabled = true;
+  feedback.textContent = 'Queuing release request...';
+  try {
+    await controlApi('POST', { platform, channel });
+    feedback.textContent = 'Release queued. The developer computer will claim it shortly.';
+    await refreshControl();
+  } catch (error) {
+    feedback.textContent = error.message;
+  } finally {
+    requestButton.disabled = !agentReady;
+  }
+}
+
+requestButton.addEventListener('click', () => createRequest());
+refreshButton.addEventListener('click', refreshControl);
+requestList.addEventListener('click', async event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) return;
+  button.disabled = true;
+  try {
+    if (button.dataset.action === 'cancel') await controlApi('PATCH', { id: Number(button.dataset.id), action: 'cancel' });
+    else await createRequest(button.dataset.platform, button.dataset.channel);
+    await refreshControl();
+  } catch (error) {
+    feedback.textContent = error.message;
+  }
+});
 
 async function canUseDashboard(user) {
   if (String(user?.email || '').toLowerCase() === HEAD_ADMIN_EMAIL) return true;
@@ -62,6 +147,9 @@ authReady.then(() => onAuthStateChanged(auth, async (user) => {
   }
   loading.hidden = true;
   dashboard.hidden = false;
+  currentUser = user;
   refresh();
+  refreshControl();
   window.setInterval(refresh, 4000);
+  window.setInterval(refreshControl, 10000);
 }));

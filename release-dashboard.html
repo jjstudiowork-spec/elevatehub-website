@@ -10,15 +10,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="release-dashboard.css" />
+  <link rel="stylesheet" href="release-dashboard-controls.css" />
 </head>
 <body>
   <header class="dashboard-nav"><a href="index.html" class="dashboard-logo"><img src="elevatehub.png" alt="" /><span>ELEVATE<b>HUB</b></span></a><div><span>PRIVATE OPERATIONS</span><a href="account.html">Account</a></div></header>
   <main class="dashboard-shell" data-dashboard hidden>
     <section class="dashboard-hero"><div><span>LOCAL RELEASE CONTROL</span><h1>Release<br /><em>Dashboard</em></h1><p>Live progress from the approved ElevateHub build computer. Nothing runs here until the local release agent is available.</p></div><aside><span>BUILD COMPUTER</span><strong data-agent-state>Checking connection</strong><small data-agent-copy>Waiting for the VS Code release agent.</small></aside></section>
+    <section class="dashboard-controls">
+      <div><span>NEW RELEASE</span><strong>Build from the trusted developer computer</strong><small data-request-help>The controls unlock while the VS Code release agent is online.</small></div>
+      <label><span>PLATFORM</span><select data-release-platform><option value="macos">macOS</option><option value="windows">Windows</option></select></label>
+      <label><span>CHANNEL</span><select data-release-channel><option value="stable">Stable</option></select></label>
+      <button type="button" data-request-release disabled>Start release</button>
+    </section>
+    <p class="dashboard-feedback" data-dashboard-feedback aria-live="polite"></p>
     <section class="dashboard-grid">
       <article class="dashboard-status"><header><div><span>CURRENT RELEASE</span><h2 data-release-version>No release active</h2></div><b data-release-state>WAITING</b></header><p data-release-message>The dashboard will show each local build step here when a release starts.</p><time data-release-time></time><ol data-release-steps></ol></article>
       <article class="dashboard-how"><span>HOW IT WORKS</span><h2>One trusted computer does the work.</h2><p>The VS Code ElevateHub Toolkit builds, signs, stages and deploys. This page only reports its real status.</p><dl><div><dt>01</dt><dd>Build requested from the trusted workstation</dd></div><div><dt>02</dt><dd>Installers and updater files are checked locally</dd></div><div><dt>03</dt><dd>Netlify deployment makes the release live</dd></div></dl></article>
     </section>
+    <section class="dashboard-history"><header><div><span>RELEASE QUEUE</span><h2>Requests and recent builds</h2></div><button type="button" data-refresh-dashboard>Refresh</button></header><div data-release-requests><p>No website release requests yet.</p></div></section>
   </main>
   <section class="dashboard-loading" data-loading><span></span><strong>Checking private access</strong><p>ElevateHub is confirming your signed-in account.</p></section>
   <script type="module" src="release-dashboard.js"></script>
