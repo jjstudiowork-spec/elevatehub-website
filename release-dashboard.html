@@ -18,6 +18,7 @@
     <section class="dashboard-hero"><div><span>LOCAL RELEASE CONTROL</span><h1>Release<br /><em>Dashboard</em></h1><p>Live progress from the approved ElevateHub build computer. Nothing runs here until the local release agent is available.</p></div><aside><span>BUILD COMPUTER</span><strong data-agent-state>Checking connection</strong><small data-agent-copy>Waiting for the VS Code release agent.</small></aside></section>
     <section class="dashboard-controls">
       <div><span>NEW RELEASE</span><strong>Build from the trusted developer computer</strong><small data-request-help>The controls unlock while the VS Code release agent is online.</small></div>
+      <div class="release-engine"><span>RELEASE ENGINE</span><div class="release-engine-options" data-release-engine><button type="button" data-engine="auto">Auto</button><button type="button" data-engine="github">GitHub</button><button type="button" data-engine="elevate">ElevateRelease</button></div><small data-engine-status>Checking GitHub availability...</small></div>
       <label><span>PLATFORM</span><select data-release-platform><option value="macos">macOS</option><option value="windows">Windows</option></select></label>
       <label><span>CHANNEL</span><select data-release-channel><option value="stable">Stable</option></select></label>
       <button type="button" data-request-release disabled>Start release</button>

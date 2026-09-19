@@ -1,6 +1,6 @@
 .dashboard-controls {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) 150px 140px auto;
+  grid-template-columns: minmax(230px, 1fr) minmax(270px, auto) 130px 120px auto;
   gap: 12px;
   align-items: end;
   margin-top: 18px;
@@ -22,6 +22,10 @@
 .request-actions button { height: 38px; border: 1px solid #393b43; border-radius: 5px; background: #17181e; color: #dedfe3; padding: 0 11px; font: 600 10px Oswald, sans-serif; }
 .dashboard-controls button { border-color: #755f36; background: #2b2418; color: #e6c783; cursor: pointer; }
 .dashboard-controls button:disabled { opacity: .38; cursor: not-allowed; }
+.release-engine-options { display: grid; grid-template-columns: .7fr 1fr 1.45fr; gap: 4px; }
+.dashboard-controls .release-engine-options button { height: 30px; padding: 0 8px; border-color: #34363e; background: #16171c; color: #858892; }
+.dashboard-controls .release-engine-options button.active { border-color: #806838; background: #292217; color: #e6c783; }
+.release-engine > small { display: block; margin-top: 5px; max-width: 290px; }
 .dashboard-feedback { min-height: 16px; margin: 8px 2px -5px; color: #d6bd82; font: 10px Arial, sans-serif; }
 .dashboard-history { margin-top: 15px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: #101116; }
 .dashboard-history header { display: flex; align-items: center; justify-content: space-between; }

@@ -1,4 +1,4 @@
-import { auth, authReady, db, doc, getDoc, onAuthStateChanged } from './firebase-web.js';
+import { auth, authReady, db, doc, getDoc, onAuthStateChanged, setDoc } from './firebase-web.js';
 
 // Add trusted release-manager addresses here. The page also checks Firebase
 // sign-in before showing any release information.
@@ -18,9 +18,25 @@ const channelSelect = document.querySelector('[data-release-channel]');
 const feedback = document.querySelector('[data-dashboard-feedback]');
 const requestList = document.querySelector('[data-release-requests]');
 const refreshButton = document.querySelector('[data-refresh-dashboard]');
+const engineControl = document.querySelector('[data-release-engine]');
+const engineStatus = document.querySelector('[data-engine-status]');
 let currentUser = null;
 let agentOnline = false;
 let agentReady = false;
+let releaseEngine = 'auto';
+let githubAvailable = false;
+
+function renderEngine() {
+  engineControl.querySelectorAll('[data-engine]').forEach(button => {
+    button.classList.toggle('active', button.dataset.engine === releaseEngine);
+    button.disabled = String(currentUser?.email || '').toLowerCase() !== HEAD_ADMIN_EMAIL;
+  });
+  engineStatus.textContent = releaseEngine === 'auto'
+    ? `Auto will use ${githubAvailable ? 'GitHub' : 'ElevateRelease'} right now.`
+    : releaseEngine === 'github'
+      ? (githubAvailable ? 'GitHub Actions is available.' : 'GitHub Actions is currently unavailable.')
+      : 'Builds and publishes on the trusted developer computer.';
+}
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
@@ -75,13 +91,14 @@ function renderRequests(requests = []) {
     const cancellable = ['queued', 'claimed'].includes(item.status);
     const retryable = ['failed', 'cancelled'].includes(item.status);
     const date = new Date(item.updatedAt || item.requestedAt || 0);
-    return `<article class="request-row" data-status="${esc(item.status)}"><div><header><b>${esc(item.platform === 'windows' ? 'Windows' : 'macOS')} ${esc(item.channel)}</b><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></div><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? `<button type="button" data-action="retry" data-platform="${esc(item.platform)}" data-channel="${esc(item.channel)}">Retry</button>` : ''}</div></article>`;
+    return `<article class="request-row" data-status="${esc(item.status)}"><div><header><b>${esc(item.platform === 'windows' ? 'Windows' : 'macOS')} ${esc(item.channel)}</b><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></div><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? `<button type="button" data-action="retry" data-platform="${esc(item.platform)}" data-channel="${esc(item.channel)}">Retry</button>` : ''}</div></article>`;
   }).join('');
 }
 
 async function refreshControl() {
   try {
     const payload = await controlApi();
+    githubAvailable = Boolean(payload.github?.available);
     agentOnline = Boolean(payload.agent?.online);
     const agentBusy = Boolean(payload.agent?.busy);
     agentReady = agentOnline && !agentBusy;
@@ -93,6 +110,7 @@ async function refreshControl() {
     agentCopy.textContent = agentOnline ? `Release agent ${agentBusy ? 'is handling a release' : 'is ready'}${agentPlatform ? ` on ${agentPlatform}` : ''}.` : 'Open VS Code with the ElevateHub Toolkit on the trusted computer.';
     document.querySelector('[data-request-help]').textContent = agentOnline ? (agentBusy ? 'Another release is currently running.' : 'The agent is ready to accept a local build.') : 'The controls unlock while the VS Code release agent is online.';
     renderRequests(payload.requests);
+    renderEngine();
   } catch (error) {
     requestButton.disabled = true;
     feedback.textContent = error.message;
@@ -103,8 +121,8 @@ async function createRequest(platform = platformSelect.value, channel = channelS
   requestButton.disabled = true;
   feedback.textContent = 'Queuing release request...';
   try {
-    await controlApi('POST', { platform, channel });
-    feedback.textContent = 'Release queued. The developer computer will claim it shortly.';
+    await controlApi('POST', { platform, channel, provider: releaseEngine });
+    feedback.textContent = `Release queued with ${releaseEngine === 'auto' ? (githubAvailable ? 'GitHub' : 'ElevateRelease') : releaseEngine === 'github' ? 'GitHub' : 'ElevateRelease'}.`;
     await refreshControl();
   } catch (error) {
     feedback.textContent = error.message;
@@ -115,6 +133,18 @@ async function createRequest(platform = platformSelect.value, channel = channelS
 
 requestButton.addEventListener('click', () => createRequest());
 refreshButton.addEventListener('click', refreshControl);
+engineControl.addEventListener('click', async event => {
+  const button = event.target.closest('[data-engine]');
+  if (!button || button.disabled) return;
+  releaseEngine = button.dataset.engine;
+  renderEngine();
+  try {
+    await setDoc(doc(db, 'elevateReleaseControl', 'admins'), { releaseProvider: releaseEngine }, { merge: true });
+    feedback.textContent = `Default release engine set to ${button.textContent}.`;
+  } catch (error) {
+    feedback.textContent = error.message;
+  }
+});
 requestList.addEventListener('click', async event => {
   const button = event.target.closest('button[data-action]');
   if (!button) return;
@@ -148,6 +178,12 @@ authReady.then(() => onAuthStateChanged(auth, async (user) => {
   loading.hidden = true;
   dashboard.hidden = false;
   currentUser = user;
+  try {
+    const settings = await getDoc(doc(db, 'elevateReleaseControl', 'admins'));
+    const saved = settings.data()?.releaseProvider;
+    if (['auto', 'github', 'elevate'].includes(saved)) releaseEngine = saved;
+  } catch {}
+  renderEngine();
   refresh();
   refreshControl();
   window.setInterval(refresh, 4000);
