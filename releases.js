@@ -24,7 +24,23 @@ function classifyAsset(asset) {
     : name.startsWith('elevateflow') ? 'ElevateFlow'
       : 'ElevateHub';
   const platform = macOS ? 'macOS universal' : 'Windows 10/11 x64';
-  return { product, platform, extension: `.${extension}`, size: formatSize(asset.size), icon: macOS ? 'laptop' : 'monitor' };
+  return {
+    product,
+    productKey: product === 'Elevate Suite' ? 'suite' : product === 'ElevateFlow' ? 'flow' : 'hub',
+    platform,
+    platformKey: macOS ? 'macos' : 'windows',
+    extension: `.${extension}`,
+    size: formatSize(asset.size),
+    icon: macOS ? 'laptop' : 'monitor',
+  };
+}
+
+function downloadId(release, asset) {
+  return `${String(release.tag_name || '').replace(/^v/, '')}:${asset.name}`;
+}
+
+function downloadPageHref(release, asset) {
+  return `download.html?id=${encodeURIComponent(downloadId(release, asset))}`;
 }
 
 function releaseFromWebsite(entry) {
@@ -61,7 +77,7 @@ function makeReleaseCard(release, index) {
   const main = document.createElement('div');
   main.className = 'release-card-main';
   const title = document.createElement('h2');
-  title.textContent = release.name && release.name !== release.tag_name ? release.name : `ElevateHub ${release.tag_name || ''}`.trim();
+  title.textContent = release.name && release.name !== release.tag_name ? release.name.replace('ElevateHub', 'Elevate') : `Elevate ${release.tag_name || ''}`.trim();
   const notes = document.createElement('p');
   notes.className = 'release-notes';
   notes.textContent = release.body?.trim() || 'Maintenance improvements and the latest ElevateHub installers.';
@@ -69,24 +85,44 @@ function makeReleaseCard(release, index) {
 
   const usableAssets = (release.assets || []).map((asset) => ({ asset, type: classifyAsset(asset) })).filter(({ type }) => type);
   if (usableAssets.length) {
-    const assets = document.createElement('div');
-    assets.className = 'release-assets';
-    usableAssets.forEach(({ asset, type }) => {
-      const link = document.createElement('a');
-      link.className = 'release-asset';
-      link.href = asset.browser_download_url;
-      link.innerHTML = `<i data-lucide="${type.icon}"></i>`;
-      const copy = document.createElement('span');
-      copy.className = 'release-asset-copy';
-      const name = document.createElement('strong');
-      name.textContent = type.product;
-      const details = document.createElement('small');
-      details.textContent = [type.platform, type.extension, type.size].filter(Boolean).join(' · ');
-      copy.append(name, details);
-      link.append(copy);
-      assets.append(link);
+    const platforms = document.createElement('div');
+    platforms.className = 'release-platforms';
+    ['macos', 'windows'].forEach((platformKey) => {
+      const platformAssets = usableAssets.filter(({ type }) => type.platformKey === platformKey);
+      if (!platformAssets.length) return;
+      const platform = document.createElement('section');
+      platform.className = `release-platform release-platform-${platformKey}`;
+      const platformTitle = document.createElement('header');
+      platformTitle.innerHTML = `<i data-lucide="${platformKey === 'macos' ? 'laptop' : 'monitor'}"></i><span>${platformKey === 'macos' ? 'macOS' : 'Windows'}</span>`;
+      const groups = document.createElement('div');
+      groups.className = 'release-product-groups';
+      ['hub', 'flow', 'suite'].forEach((productKey) => {
+        const selection = platformAssets.find(({ type }) => type.productKey === productKey);
+        if (!selection) return;
+        const group = document.createElement('div');
+        group.className = 'release-product-group';
+        const label = document.createElement('span');
+        label.className = 'release-product-label';
+        label.textContent = selection.type.product;
+        const link = document.createElement('a');
+        link.className = 'release-asset';
+        link.href = downloadPageHref(release, selection.asset);
+        link.innerHTML = `<i data-lucide="download"></i>`;
+        const copy = document.createElement('span');
+        copy.className = 'release-asset-copy';
+        const details = document.createElement('small');
+        details.textContent = [selection.type.platform, selection.type.extension, selection.type.size].filter(Boolean).join(' · ');
+        const action = document.createElement('strong');
+        action.textContent = 'Download';
+        copy.append(action, details);
+        link.append(copy);
+        group.append(label, link);
+        groups.append(group);
+      });
+      platform.append(platformTitle, groups);
+      platforms.append(platform);
     });
-    main.append(assets);
+    main.append(platforms);
   }
 
   card.append(side, main);

@@ -19,8 +19,15 @@
 .release-card-main { min-width: 0; padding: 27px 30px; }
 .release-card-main h2 { margin: 0 0 12px; font: 700 19px Manrope, sans-serif; }
 .release-notes { max-width: 760px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; white-space: pre-line; }
-.release-assets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-.release-asset { min-height: 50px; display: inline-flex; align-items: center; gap: 9px; padding: 7px 12px; border: 1px solid #353b41; border-radius: 6px; color: #d5d8da; text-decoration: none; }
+.release-platforms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+.release-platform { min-width: 0; border: 1px solid #30363c; border-radius: 7px; background: #0e1114; overflow: hidden; }
+.release-platform > header { display: flex; align-items: center; gap: 8px; min-height: 43px; padding: 0 13px; border-bottom: 1px solid #292f34; color: #e6e9ea; font-size: 10px; font-weight: 800; }
+.release-platform > header svg { width: 15px; color: var(--gold); }
+.release-product-groups { display: grid; gap: 0; }
+.release-product-group { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: stretch; border-bottom: 1px solid #242a2f; }
+.release-product-group:last-child { border-bottom: 0; }
+.release-product-label { display: flex; align-items: center; padding: 11px 12px; color: #878f96; font: 8px "Space Mono", monospace; text-transform: uppercase; }
+.release-asset { min-height: 44px; display: inline-flex; align-items: center; gap: 9px; padding: 7px 12px; border-left: 1px solid #242a2f; color: #d5d8da; text-decoration: none; }
 .release-asset:hover { border-color: #66583c; background: #191d21; }
 .release-asset svg { width: 14px; color: var(--gold); }
 .release-asset-copy { display: grid; gap: 3px; min-width: 0; }
@@ -41,4 +48,5 @@
   .release-card-side strong { margin: 0; }
   .release-card-side time { margin-left: auto; }
   .release-card-main { padding: 23px 21px; }
+  .release-platforms { grid-template-columns: 1fr; }
 }

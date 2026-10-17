@@ -1,0 +1,16 @@
+.guided-install { max-width: 960px; margin: 0 auto 96px; padding: 0 24px; }
+.guide-package { display: grid; grid-template-columns: auto 1fr; gap: 15px; align-items: center; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.guide-package > i { width: 24px; height: 24px; color: var(--gold); }
+.guide-package strong { display: block; color: #f5f6f6; font: 700 15px Manrope, sans-serif; }
+.guide-package small { display: block; margin-top: 5px; color: #899199; font: 9px "Space Mono", monospace; }
+.guide-steps { margin-top: 16px; padding: 34px; border: 1px solid #cfd3d1; border-radius: 8px; background: #eef0ed; color: #111417; }
+.guide-steps header { display: flex; gap: 11px; align-items: center; margin-bottom: 25px; }
+.guide-steps header i { color: #70582d; }
+.guide-steps h2 { margin: 0; font: 700 23px Manrope, sans-serif; }
+.guide-steps header p { margin: 4px 0 0; color: #596168; font-size: 12px; }
+.guide-steps ol { display: grid; gap: 13px; margin: 0; padding: 0; list-style: none; }
+.guide-steps li { display: grid; grid-template-columns: 25px 1fr; gap: 11px; align-items: start; color: #4e565c; font-size: 13px; line-height: 1.5; }
+.guide-steps li b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; background: #dbd9d0; color: #594a2d; font-size: 9px; }
+.guide-note { margin: 22px 0 0; padding: 13px 15px; border-left: 3px solid #a9894c; background: #e4e3db; color: #555b5f; font-size: 12px; line-height: 1.5; }
+.guide-note strong { color: #292e31; }
+@media (max-width: 600px) { .guide-steps { padding: 25px 20px; } }

@@ -36,8 +36,17 @@ async function initializeAccountNavigation() {
 
 function chooseAsset(assets, platform) {
   const usable = assets.filter((asset) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json');
-  if (platform === 'mac') return usable.find((asset) => /\.dmg$/i.test(asset.name) && /universal|aarch64|x64/i.test(asset.name)) || usable.find((asset) => /\.dmg$/i.test(asset.name));
+  if (platform === 'mac') return usable.find((asset) => /\.dmg$/i.test(asset.name) && /universal|aarch64|x64/i.test(asset.name)) || usable.find((asset) => /\.(dmg|pkg)$/i.test(asset.name));
   return usable.find((asset) => /\.exe$/i.test(asset.name) && /setup|installer|nsis/i.test(asset.name)) || usable.find((asset) => /\.(exe|msi)$/i.test(asset.name));
+}
+
+function assetFileName(url) {
+  try { return new URL(url, window.location.origin).pathname.split('/').pop() || ''; } catch { return ''; }
+}
+
+function guidedDownloadHref(version, asset) {
+  if (!asset?.url) return RELEASE_PAGE;
+  return `download.html?id=${encodeURIComponent(`${version}:${assetFileName(asset.url)}`)}`;
 }
 
 function relativeTime(value) {
@@ -81,19 +90,19 @@ async function loadRelease() {
     const response = await fetch(`${WEBSITE_RELEASE_API}?t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Website release returned ${response.status}`);
     const release = await response.json();
-    const installers = Object.entries(release.installers || {});
-    const mac = installers.find(([target]) => target.startsWith('darwin-'))?.[1];
-    const windows = installers.find(([target]) => target.startsWith('windows-'))?.[1];
+    const installers = Object.values(release.installers || {});
+    const mac = chooseAsset(installers.map((asset) => ({ ...asset, name: assetFileName(asset.url) })), 'mac');
+    const windows = chooseAsset(installers.map((asset) => ({ ...asset, name: assetFileName(asset.url) })), 'windows');
     if (!mac && !windows) throw new Error('Website release has no installers');
     document.querySelectorAll('[data-release-version]').forEach((node) => { node.textContent = `v${release.version}`; });
-    document.querySelectorAll('[data-mac-download]').forEach((link) => { link.href = mac?.url || RELEASE_PAGE; });
-    document.querySelectorAll('[data-windows-download]').forEach((link) => { link.href = windows?.url || RELEASE_PAGE; });
+    document.querySelectorAll('[data-mac-download]').forEach((link) => { link.href = guidedDownloadHref(release.version, mac); });
+    document.querySelectorAll('[data-windows-download]').forEach((link) => { link.href = guidedDownloadHref(release.version, windows); });
     const isMac = /Mac|iPhone|iPad/.test(navigator.platform) || /Mac OS/.test(navigator.userAgent);
     const asset = isMac ? mac : windows;
     const primary = document.querySelector('[data-primary-download]');
     const note = document.querySelector('[data-download-note]');
     if (primary) {
-      primary.href = asset?.url || RELEASE_PAGE;
+      primary.href = guidedDownloadHref(release.version, asset);
       primary.querySelector('span').textContent = asset ? `Download for ${isMac ? 'macOS' : 'Windows'}` : 'View latest downloads';
     }
     if (note) note.textContent = asset ? `v${release.version} · ${isMac ? 'macOS installer' : '64-bit Windows installer'}` : 'Choose your installer from the latest release.';
