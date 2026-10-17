@@ -1,0 +1,372 @@
+[
+  {
+    "version": "0.5.17",
+    "publishedAt": "2026-10-17T08:17:21Z",
+    "notes": "Release builds are in progress.",
+    "installers": {
+      "windows-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.17/Elevate-Suite-0.5.17-setup.exe",
+        "size": 49813111
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.17/Elevate-Suite-0.5.17-universal.pkg",
+        "size": 108397823
+      },
+      "macos-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.17/ElevateHub_0.5.17_universal.dmg",
+        "size": 87196899
+      },
+      "windows-4": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.17/ElevateHub_0.5.17_x64-setup.exe",
+        "size": 41313345
+      }
+    }
+  },
+  {
+    "version": "0.5.7",
+    "publishedAt": "2026-09-05T17:04:34Z",
+    "notes": "Release builds are in progress.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.7/ElevateHub_0.5.7_universal.dmg",
+        "size": 59201089
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.7/ElevateHub_0.5.7_x64-setup.exe",
+        "size": 27729831
+      }
+    }
+  },
+  {
+    "version": "0.5.6",
+    "publishedAt": "2026-09-04T23:49:34Z",
+    "notes": "Release builds are in progress.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.6/ElevateHub_0.5.6_universal.dmg",
+        "size": 59026361
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.6/ElevateHub_0.5.6_x64-setup.exe",
+        "size": 27666565
+      }
+    }
+  },
+  {
+    "version": "0.5.5",
+    "publishedAt": "2026-09-04T15:57:05Z",
+    "notes": "Release builds are in progress.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.5/ElevateHub_0.5.5_universal.dmg",
+        "size": 59026924
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.5/ElevateHub_0.5.5_x64-setup.exe",
+        "size": 27665479
+      }
+    }
+  },
+  {
+    "version": "0.5.4",
+    "publishedAt": "2026-09-01T13:49:12Z",
+    "notes": "# ElevateHub 0.5.4\n\nMarketplace-ready Stream Deck controls with reliable set navigation, button customization, and improved Resolume naming.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.4/ElevateHub_0.5.4_universal.dmg",
+        "size": 58537320
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.4/ElevateHub_0.5.4_x64-setup.exe",
+        "size": 27660594
+      }
+    }
+  },
+  {
+    "version": "0.5.1",
+    "publishedAt": "2026-09-01T13:57:56Z",
+    "notes": "# ElevateHub 0.5.1\n\nAdds Resolume-to-ProPresenter Timer Sync and fixes standalone ElevateFlow packaging on Windows.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.1/ElevateHub_0.5.1_universal.dmg",
+        "size": 58470773
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.1/ElevateHub_0.5.1_x64-setup.exe",
+        "size": 27644031
+      }
+    }
+  },
+  {
+    "version": "0.4.2",
+    "publishedAt": "2026-09-01T13:58:05Z",
+    "notes": "# ElevateHub 0.4.2\n\n- Fixes Windows release validation and updater signing.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.4.2/ElevateHub_0.4.2_universal.dmg",
+        "size": 58229859
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.4.2/ElevateHub_0.4.2_x64-setup.exe",
+        "size": 27564340
+      }
+    }
+  },
+  {
+    "version": "0.3.4",
+    "publishedAt": "2026-09-01T13:58:13Z",
+    "notes": "Release v0.3.4",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.4/ElevateFlow.dmg",
+        "size": 56144881
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.4/ElevateFlow_0.3.4_universal.dmg",
+        "size": 56144881
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.4/ElevateFlow_0.3.4_x64-setup.exe",
+        "size": 27112883
+      }
+    }
+  },
+  {
+    "version": "0.3.3",
+    "publishedAt": "2026-09-01T13:58:22Z",
+    "notes": "Release v0.3.3",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.3/ElevateFlow.dmg",
+        "size": 56035460
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.3/ElevateFlow_0.3.3_universal.dmg",
+        "size": 56035460
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.3/ElevateFlow_0.3.3_x64-setup.exe",
+        "size": 27069058
+      }
+    }
+  },
+  {
+    "version": "0.3.2",
+    "publishedAt": "2026-09-01T13:58:29Z",
+    "notes": "Release v0.3.2",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.2/ElevateFlow.dmg",
+        "size": 52013617
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.2/ElevateFlow_0.3.2_universal.dmg",
+        "size": 52013617
+      }
+    }
+  },
+  {
+    "version": "0.3.1",
+    "publishedAt": "2026-09-01T13:58:37Z",
+    "notes": "Release v0.3.1",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.1/ElevateFlow.dmg",
+        "size": 52102860
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.1/ElevateFlow_0.3.1_universal.dmg",
+        "size": 52102860
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.1/ElevateFlow_0.3.1_x64-setup.exe",
+        "size": 24170361
+      }
+    }
+  },
+  {
+    "version": "0.3.0",
+    "publishedAt": "2026-09-01T13:58:46Z",
+    "notes": "Release v0.3.0",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.0/ElevateFlow.dmg",
+        "size": 50509301
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.0/ElevateFlow_0.3.0_universal.dmg",
+        "size": 50509301
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.3.0/ElevateFlow_0.3.0_x64-setup.exe",
+        "size": 23668965
+      }
+    }
+  },
+  {
+    "version": "0.2.9",
+    "publishedAt": "2026-09-01T13:58:54Z",
+    "notes": "Release v0.2.9",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.9/ElevateFlow.dmg",
+        "size": 50601106
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.9/ElevateFlow_0.2.9_universal.dmg",
+        "size": 50601106
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.9/ElevateFlow_0.2.9_x64-setup.exe",
+        "size": 23630298
+      }
+    }
+  },
+  {
+    "version": "0.2.8",
+    "publishedAt": "2026-09-01T13:59:02Z",
+    "notes": "Release v0.2.8",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.8/ElevateFlow.dmg",
+        "size": 50601099
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.8/ElevateFlow_0.2.8_universal.dmg",
+        "size": 50601099
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.8/ElevateFlow_0.2.8_x64-setup.exe",
+        "size": 23631494
+      }
+    }
+  },
+  {
+    "version": "0.2.7",
+    "publishedAt": "2026-09-01T13:59:10Z",
+    "notes": "Release v0.2.7",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.7/ElevateFlow.dmg",
+        "size": 50840921
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.7/ElevateFlow_0.2.7_universal.dmg",
+        "size": 50840921
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.7/ElevateFlow_0.2.7_x64-setup.exe",
+        "size": 23706191
+      }
+    }
+  },
+  {
+    "version": "0.2.6",
+    "publishedAt": "2026-09-01T13:59:18Z",
+    "notes": "Release v0.2.6",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.6/ElevateFlow.dmg",
+        "size": 50825907
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.6/ElevateFlow_0.2.6_universal.dmg",
+        "size": 50825907
+      },
+      "windows-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.6/ElevateFlow_0.2.6_x64-setup.exe",
+        "size": 23702890
+      }
+    }
+  },
+  {
+    "version": "0.2.5",
+    "publishedAt": "2026-09-01T13:59:26Z",
+    "notes": "Release v0.2.5",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.5/ElevateFlow.dmg",
+        "size": 50826858
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.5/ElevateFlow_0.2.5_universal.dmg",
+        "size": 50826858
+      }
+    }
+  },
+  {
+    "version": "0.2.4",
+    "publishedAt": "2026-09-01T13:59:34Z",
+    "notes": "Release v0.2.4",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.4/ElevateFlow.dmg",
+        "size": 50826860
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.4/ElevateFlow_0.2.4_universal.dmg",
+        "size": 50826860
+      }
+    }
+  },
+  {
+    "version": "0.2.3",
+    "publishedAt": "2026-09-01T13:59:41Z",
+    "notes": "Release v0.2.3",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.3/ElevateFlow.dmg",
+        "size": 47645742
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.3/ElevateFlow_0.2.3_universal.dmg",
+        "size": 47645742
+      }
+    }
+  },
+  {
+    "version": "0.2.1",
+    "publishedAt": "2026-09-01T13:59:49Z",
+    "notes": "Add permissions to workflow",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.1/ElevateFlow.dmg",
+        "size": 47619308
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.2.1/ElevateFlow_0.2.0_universal.dmg",
+        "size": 47619308
+      }
+    }
+  },
+  {
+    "version": "0.5.3",
+    "publishedAt": "2026-08-31T14:35:03Z",
+    "notes": "# ElevateHub 0.5.3\n\nFixes false ElevateFlow verification failures when official studio assets are republished, while preserving SHA-256 integrity checks against the current platform catalog.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.3/ElevateHub_0.5.3_universal.dmg",
+        "size": 58528592
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.3/ElevateHub_0.5.3_x64-setup.exe",
+        "size": 27659581
+      }
+    }
+  },
+  {
+    "version": "0.5.2",
+    "publishedAt": "2026-08-31T09:55:51Z",
+    "notes": "# ElevateHub 0.5.2\n\nAdds a guided multi-computer Timing Monitor with direct and middle-computer layouts, reliable ElevateHub peer discovery, active Resolume clip monitoring, and on-demand synchronization of selected ProPresenter timers. This release also improves timer accuracy and background connectivity, fixes false updater failure messages, and moves public installers and update metadata to the dedicated ElevateHub downloads repository.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.2/ElevateHub_0.5.2_universal.dmg",
+        "size": 58504510
+      },
+      "windows-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.2/ElevateHub_0.5.2_x64-setup.exe",
+        "size": 27646411
+      }
+    }
+  }
+]
