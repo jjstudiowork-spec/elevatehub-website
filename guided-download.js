@@ -25,13 +25,35 @@ function guideSteps(details) {
   const isPkg = details.extension === '.PKG';
   const isZip = details.extension === '.ZIP';
   if (isMac) {
-    const first = isPkg ? 'Open the downloaded installer package, then select the Elevate apps you want to install.' : isZip ? 'In Downloads, double-click the ZIP file to unpack the app.' : 'In Downloads, double-click the DMG file, then drag the app into Applications.';
-    const second = isPkg ? 'Follow the macOS installer prompts and enter your Mac password when asked.' : 'Open the app from Applications.';
-    return { title: `Install ${details.product} on macOS`, intro: 'Your download should start automatically. Finder will show it in Downloads.', steps: [first, second, 'If macOS says it cannot verify the app, control-click the app, choose Open, then choose Open again.'], note: 'Only continue past a macOS security prompt when the downloaded file name above matches the Elevate package you selected.' };
+    const appName = details.product === 'Elevate Suite'
+      ? 'ElevateHub.app /Applications/ElevateFlow.app'
+      : details.product === 'ElevateFlow' ? 'ElevateFlow.app' : 'ElevateHub.app';
+    const first = isPkg ? 'Open the package from Downloads and use the installer to select the Elevate apps you want.' : isZip ? 'Double-click the ZIP in Downloads to unpack the app.' : 'Open the DMG in Downloads, then drag the app into Applications.';
+    const second = isPkg ? 'Finish the installer prompts, then find the installed app in Applications.' : 'Open the app from Applications when you are ready.';
+    return {
+      title: `A clean macOS install for ${details.product}.`,
+      intro: 'Your download has started. This takes about a minute.',
+      steps: [first, second, 'If macOS shows a security message, use the quick fix beside these steps, then open the app again.'],
+      command: `xattr -rd com.apple.quarantine /Applications/${appName}`,
+      securityTitle: 'Mac says it cannot verify the app?',
+      securityCopy: 'That is normal for a new independently distributed build. First make sure the package name above is the one you chose, then paste this command into Terminal.',
+      note: 'You only need to run this once, and only for a download you recognize from ElevateHub.'
+    };
   }
   const first = isZip ? 'Open Downloads, right-click the ZIP file, then choose Extract All.' : 'Open the downloaded Setup file from your browser or Downloads folder.';
   const second = isZip ? 'Open the extracted folder and run ElevateFlow.' : 'Follow the installer prompts to finish setup.';
-  return { title: `Install ${details.product} on Windows`, intro: 'Your download should start automatically. Look in the browser download bar or Downloads folder.', steps: [first, second, 'If Microsoft Defender SmartScreen appears, first verify the file name above. Then choose More info and Run anyway only when you recognize it as your Elevate download.'], note: 'Windows may warn about a new independent app publisher. Check the file name and source before choosing Run anyway.' };
+  return {
+    title: `A clean Windows install for ${details.product}.`,
+    intro: 'Your download has started. This takes about a minute.',
+    steps: [first, second, 'If Microsoft Defender SmartScreen appears, use the safety check beside these steps before continuing.'],
+    securityTitle: 'Windows Defender SmartScreen appeared?',
+    securityCopy: 'Check that the package name above is the one you selected. If it is, choose More info, then Run anyway to continue.',
+    note: 'Windows may warn about newer independent app publishers. Only continue when you recognize the file and downloaded it from ElevateHub.'
+  };
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
 }
 
 function renderGuide(asset, version) {
@@ -53,9 +75,23 @@ function renderGuide(asset, version) {
   button.setAttribute('download', '');
   button.querySelector('span').textContent = 'Download again';
   content.hidden = false;
+  const securityVisual = guide.command
+    ? `<div class="terminal-card"><div class="terminal-top"><span></span><span></span><span></span><b>Terminal</b></div><div class="terminal-body"><span class="terminal-prompt">you@Mac ~ %</span><code>${escapeHtml(guide.command)}</code><span class="terminal-cursor"></span></div><button class="terminal-copy" type="button" data-copy-quarantine data-command="${escapeHtml(guide.command)}"><i data-lucide="copy"></i><span>Copy command</span></button></div>`
+    : `<div class="smart-screen-card"><div class="smart-screen-icon"><i data-lucide="shield-alert"></i></div><div><small>WINDOWS SECURITY</small><strong>Check it. Then continue.</strong><p>Look for <b>More info</b>, verify the package name, then choose <b>Run anyway</b>.</p></div></div>`;
   content.innerHTML = `
-    <div class="guide-package"><i data-lucide="${details.platform === 'macOS' ? 'laptop' : 'monitor'}"></i><div><strong>${name}</strong><small>${details.product} · ${details.platform} · ${details.extension}${asset.size ? ` · ${formatSize(asset.size)}` : ''}</small></div></div>
-    <article class="guide-steps"><header><i data-lucide="list-checks"></i><div><h2>${guide.title}</h2><p>${guide.intro}</p></div></header><ol>${guide.steps.map((step, index) => `<li><b>${index + 1}</b><span>${step}</span></li>`).join('')}</ol><p class="guide-note"><strong>Security prompt?</strong> ${guide.note}</p></article>`;
+    <div class="guide-package"><span class="guide-package-icon"><i data-lucide="${details.platform === 'macOS' ? 'laptop' : 'monitor'}"></i></span><div><span class="guide-package-label">SELECTED PACKAGE</span><strong>${escapeHtml(name)}</strong><small>${details.product} · ${details.platform} · ${details.extension}${asset.size ? ` · ${formatSize(asset.size)}` : ''}</small></div><span class="guide-ready"><i data-lucide="check"></i> Download started</span></div>
+    <article class="guide-steps"><header><span class="guide-step-mark"><i data-lucide="sparkles"></i></span><div><span class="guide-kicker">YOUR NEXT THREE STEPS</span><h2>${guide.title}</h2><p>${guide.intro}</p></div></header><div class="guide-layout"><ol>${guide.steps.map((step, index) => `<li><b>${index + 1}</b><span>${step}</span></li>`).join('')}</ol><aside class="security-card"><span class="security-card-kicker">NEED A HAND?</span><h3>${guide.securityTitle}</h3><p>${guide.securityCopy}</p>${securityVisual}<p class="guide-note"><i data-lucide="circle-check"></i><span>${guide.note}</span></p></aside></div></article>`;
+  content.querySelector('[data-copy-quarantine]')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    try {
+      await navigator.clipboard.writeText(button.dataset.command || '');
+      button.innerHTML = '<i data-lucide="check"></i><span>Copied</span>';
+      initializeIcons();
+      window.setTimeout(() => { button.innerHTML = '<i data-lucide="copy"></i><span>Copy command</span>'; initializeIcons(); }, 1800);
+    } catch (error) {
+      console.warn('[ElevateHub site] Could not copy quarantine command:', error);
+    }
+  });
   initializeIcons();
   window.setTimeout(() => { window.location.assign(asset.url); }, 700);
 }
