@@ -17,7 +17,7 @@ async function initializeAccountNavigation() {
         link.removeAttribute('data-scramble');
       });
       document.querySelectorAll('[data-register-link]').forEach((link) => { link.hidden = Boolean(user); });
-      const dashboardLinks = document.querySelectorAll('[data-release-dashboard-link]');
+      const privateLinks = document.querySelectorAll('[data-release-dashboard-link], [data-admin-menu-link]');
       let canManageReleases = String(user?.email || '').toLowerCase() === 'jjstudiowork@gmail.com';
       if (user && !canManageReleases) {
         try {
@@ -27,7 +27,7 @@ async function initializeAccountNavigation() {
           console.warn('[ElevateHub site] Release access could not be checked:', error);
         }
       }
-      dashboardLinks.forEach((link) => { link.hidden = !canManageReleases; });
+      privateLinks.forEach((link) => { link.hidden = !canManageReleases; });
     });
   } catch (error) {
     console.warn('[ElevateHub site] Could not restore account navigation:', error);
