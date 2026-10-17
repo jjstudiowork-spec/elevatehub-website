@@ -5,11 +5,26 @@ function formatReleaseDate(value) {
   return new Intl.DateTimeFormat('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value));
 }
 
+function formatSize(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const value = bytes / (1024 ** index);
+  return `${value >= 10 || index === 0 ? value.toFixed(0) : value.toFixed(1)} ${units[index]}`;
+}
+
 function classifyAsset(asset) {
   const name = asset.name.toLowerCase();
-  if (name.endsWith('.dmg') || name.endsWith('.pkg')) return { label: 'Download for macOS', icon: 'laptop' };
-  if (name.endsWith('.exe') || name.endsWith('.msi')) return { label: 'Download for Windows', icon: 'monitor' };
-  return null;
+  const extension = name.match(/\.(dmg|pkg|exe|msi|zip)$/)?.[1];
+  const isFlowArchive = name.startsWith('elevateflow-') && extension === 'zip';
+  if (!extension || (!['dmg', 'pkg', 'exe', 'msi'].includes(extension) && !isFlowArchive)) return null;
+
+  const macOS = ['dmg', 'pkg'].includes(extension) || name.includes('-macos-');
+  const product = name.startsWith('elevate-suite') ? 'Elevate Suite'
+    : name.startsWith('elevateflow') ? 'ElevateFlow'
+      : 'ElevateHub';
+  const platform = macOS ? 'macOS universal' : 'Windows 10/11 x64';
+  return { product, platform, extension: `.${extension}`, size: formatSize(asset.size), icon: macOS ? 'laptop' : 'monitor' };
 }
 
 function releaseFromWebsite(entry) {
@@ -21,6 +36,7 @@ function releaseFromWebsite(entry) {
     assets: Object.values(entry.installers || {}).map((installer) => ({
       name: new URL(installer.url, window.location.origin).pathname.split('/').pop() || 'installer',
       browser_download_url: installer.url,
+      size: installer.size,
     })),
   };
 }
@@ -59,7 +75,15 @@ function makeReleaseCard(release, index) {
       const link = document.createElement('a');
       link.className = 'release-asset';
       link.href = asset.browser_download_url;
-      link.innerHTML = `<i data-lucide="${type.icon}"></i><span>${type.label}</span>`;
+      link.innerHTML = `<i data-lucide="${type.icon}"></i>`;
+      const copy = document.createElement('span');
+      copy.className = 'release-asset-copy';
+      const name = document.createElement('strong');
+      name.textContent = type.product;
+      const details = document.createElement('small');
+      details.textContent = [type.platform, type.extension, type.size].filter(Boolean).join(' · ');
+      copy.append(name, details);
+      link.append(copy);
       assets.append(link);
     });
     main.append(assets);
