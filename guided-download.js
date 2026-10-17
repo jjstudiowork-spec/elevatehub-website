@@ -30,14 +30,21 @@ function guideSteps(details) {
       : details.product === 'ElevateFlow' ? 'ElevateFlow.app' : 'ElevateHub.app';
     const first = isPkg ? 'Open the package from Downloads and use the installer to select the Elevate apps you want.' : isZip ? 'Double-click the ZIP in Downloads to unpack the app.' : 'Open the DMG in Downloads, then drag the app into Applications.';
     const second = isPkg ? 'Finish the installer prompts, then find the installed app in Applications.' : 'Open the app from Applications when you are ready.';
+    const command = isPkg
+      ? `xattr -rd com.apple.quarantine ~/Downloads/${details.fileName}`
+      : `xattr -rd com.apple.quarantine /Applications/${appName}`;
     return {
       title: `A clean macOS install for ${details.product}.`,
       intro: 'Your download has started. This takes about a minute.',
       steps: [first, second, 'If macOS shows a security message, use the quick fix beside these steps, then open the app again.'],
-      command: `xattr -rd com.apple.quarantine /Applications/${appName}`,
-      securityTitle: 'Mac says it cannot verify the app?',
-      securityCopy: 'That is normal for a new independently distributed build. First make sure the package name above is the one you chose, then paste this command into Terminal.',
-      note: 'You only need to run this once, and only for a download you recognize from ElevateHub.'
+      command,
+      securityTitle: isPkg ? 'Mac will not open the installer package?' : 'Mac says it cannot verify the app?',
+      securityCopy: isPkg
+        ? 'That is normal for a new independently distributed installer. First make sure the package name above is the one you chose, then paste this command into Terminal before opening it.'
+        : 'That is normal for a new independently distributed build. First make sure the package name above is the one you chose, then paste this command into Terminal.',
+      note: isPkg
+        ? 'This command only removes the quarantine flag from the package in your Downloads folder.'
+        : 'You only need to run this once, and only for a download you recognize from ElevateHub.'
     };
   }
   const first = isZip ? 'Open Downloads, right-click the ZIP file, then choose Extract All.' : 'Open the downloaded Setup file from your browser or Downloads folder.';
@@ -59,6 +66,7 @@ function escapeHtml(value) {
 function renderGuide(asset, version) {
   const name = fileName(asset.url);
   const details = packageDetails(name);
+  details.fileName = name;
   const guide = guideSteps(details);
   const title = document.querySelector('[data-guide-title]');
   const eyebrow = document.querySelector('[data-guide-eyebrow]');
