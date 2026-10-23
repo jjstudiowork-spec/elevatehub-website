@@ -1,5 +1,33 @@
 [
   {
+    "version": "0.5.19",
+    "product": "hub",
+    "publishedAt": "2026-10-23T12:46:14Z",
+    "notes": "# ElevateHub 0.5.19\n\nElevateHub improvements and fixes.",
+    "installers": {
+      "macos-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.19/ElevateHub_0.5.19_universal.dmg",
+        "size": 87681792
+      }
+    }
+  },
+  {
+    "version": "0.5.18",
+    "product": "suite",
+    "publishedAt": "2026-10-18T00:50:59Z",
+    "notes": "Release builds are in progress.",
+    "installers": {
+      "windows-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.18/Elevate-Suite-0.5.18-setup.exe",
+        "size": 49833939
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.18/Elevate-Suite-0.5.18-universal.pkg",
+        "size": 108382572
+      }
+    }
+  },
+  {
     "version": "0.5.17",
     "publishedAt": "2026-10-17T08:17:21Z",
     "notes": "Release builds are in progress.",
