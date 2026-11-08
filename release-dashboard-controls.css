@@ -34,6 +34,7 @@
 .dashboard-history > [data-release-requests] { display: grid; gap: 8px; margin-top: 16px; }
 .dashboard-history > [data-release-requests] > p { color: #71747c; font: 11px Arial, sans-serif; }
 .request-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 14px; border: 1px solid #2a2c33; border-radius: 6px; background: #0c0d11; }
+.request-main{min-width:0;color:inherit;text-decoration:none}.request-row:hover{border-color:rgba(216,184,109,.3);background:#111218}
 .request-row header { display: flex; justify-content: flex-start; gap: 9px; }
 .request-row header b { color: #e3e4e8; font-size: 12px; }
 .request-row header span { padding: 3px 5px; border-radius: 3px; background: #23252b; color: #999da7; font: 700 7px Space Mono, monospace; }

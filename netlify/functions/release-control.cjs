@@ -1,4 +1,4 @@
-const { authenticatedUser, github, json } = require('./_beta-auth.cjs');
+const { authenticatedUser, github, githubRepository, json } = require('./_beta-auth.cjs');
 
 const ADMIN_EMAIL = 'jjstudiowork@gmail.com';
 const REQUEST_LABEL = 'elevate-release-request';
@@ -8,6 +8,8 @@ const PROJECT_ID = 'elevateflow-sync';
 function parseBody(value) {
   try { return JSON.parse(value || '{}'); } catch { return {}; }
 }
+
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 
 function issueData(issue) {
   const data = parseBody(issue.body);
@@ -27,7 +29,110 @@ function issueData(issue) {
     updatedAt: data.updatedAt || issue.updated_at,
     steps: Array.isArray(data.steps) ? data.steps : [],
     logs: Array.isArray(data.logs) ? data.logs.slice(-30) : [],
+    runId: data.runId || null,
+    runUrl: data.runUrl || '',
   };
+}
+
+function compactStep(step) {
+  return {
+    name: step.name,
+    number: step.number,
+    status: step.status,
+    conclusion: step.conclusion,
+    startedAt: step.started_at,
+    completedAt: step.completed_at,
+  };
+}
+
+function compactJob(job) {
+  return {
+    id: job.id,
+    name: job.name,
+    status: job.status,
+    conclusion: job.conclusion,
+    startedAt: job.started_at,
+    completedAt: job.completed_at,
+    url: job.html_url,
+    steps: (job.steps || []).map(compactStep),
+  };
+}
+
+async function repositoryState(repository, label, path = '/commits/main') {
+  const response = await githubRepository(repository, path);
+  if (!response.ok) return { label, repository, available: false };
+  const data = await response.json();
+  return {
+    label,
+    repository,
+    available: true,
+    url: data.html_url || data.url || `https://github.com/${repository}`,
+    updatedAt: data.commit?.committer?.date || data.published_at || data.updated_at || '',
+    reference: data.sha?.slice(0, 7) || data.tag_name || '',
+  };
+}
+
+async function findDispatchedRun(requestedAt) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const response = await github('/actions/workflows/release.yml/runs?event=workflow_dispatch&per_page=20');
+    if (response.ok) {
+      const runs = (await response.json()).workflow_runs || [];
+      const threshold = new Date(requestedAt).getTime() - 15000;
+      const run = runs.find(item => new Date(item.created_at).getTime() >= threshold);
+      if (run) return run;
+    }
+    await wait(1000);
+  }
+  return null;
+}
+
+async function commandCentre(id) {
+  const issueResponse = await github(`/issues/${id}`);
+  if (!issueResponse.ok) throw Object.assign(new Error('Release request not found.'), { statusCode: 404 });
+  const issue = await issueResponse.json();
+  const request = issueData(issue);
+  const raw = parseBody(issue.body);
+  let runId = request.runId;
+  if (!runId && request.provider === 'github' && request.version) {
+    const run = await findDispatchedRun(request.requestedAt);
+    runId = run?.id || null;
+    if (runId) {
+      raw.runId = runId;
+      raw.runUrl = run.html_url;
+      raw.updatedAt = new Date().toISOString();
+      await github(`/issues/${id}`, 'application/vnd.github+json', 'follow', 'POST', JSON.stringify({ body: JSON.stringify(raw, null, 2) }));
+      request.runId = runId;
+      request.runUrl = run.html_url;
+    }
+  }
+
+  let run = null;
+  let jobs = [];
+  if (runId) {
+    const [runResponse, jobsResponse] = await Promise.all([
+      github(`/actions/runs/${runId}`),
+      github(`/actions/runs/${runId}/jobs?per_page=100`),
+    ]);
+    if (runResponse.ok) {
+      const data = await runResponse.json();
+      run = { id: data.id, status: data.status, conclusion: data.conclusion, createdAt: data.created_at, updatedAt: data.updated_at, url: data.html_url, attempt: data.run_attempt };
+    }
+    if (jobsResponse.ok) jobs = ((await jobsResponse.json()).jobs || []).map(compactJob);
+  }
+
+  const releasePath = request.version ? `/releases/tags/v${encodeURIComponent(request.version)}` : '/releases/latest';
+  const [source, downloads, website, releaseResponse] = await Promise.all([
+    repositoryState('jjstudiowork-spec/elevateflow', 'Application source'),
+    repositoryState('jjstudiowork-spec/elevatehub-downloads', 'Public downloads', releasePath),
+    repositoryState('jjstudiowork-spec/elevatehub-website', 'Release website'),
+    githubRepository('jjstudiowork-spec/elevatehub-downloads', releasePath),
+  ]);
+  let artifacts = [];
+  if (releaseResponse.ok) {
+    const release = await releaseResponse.json();
+    artifacts = (release.assets || []).map(asset => ({ name: asset.name, size: asset.size, downloads: asset.download_count, url: asset.browser_download_url, createdAt: asset.created_at }));
+  }
+  return { request, run, jobs, repositories: [source, downloads, website], artifacts };
 }
 
 function nextPatch(version) {
@@ -144,11 +249,14 @@ async function createRequest(user, body, availability) {
       const detail = await dispatch.text();
       throw new Error(`GitHub rejected the release workflow${detail ? `: ${detail.slice(0, 180)}` : '.'}`);
     }
+    const run = await findDispatchedRun(now);
     const dispatched = {
       ...payload,
       status: 'dispatched',
       message: `v${version} was sent to GitHub Actions. Builds are now running.`,
       updatedAt: new Date().toISOString(),
+      runId: run?.id || null,
+      runUrl: run?.html_url || '',
       steps: payload.steps.map((step, index) => index === 0 ? { ...step, state: 'complete' } : index === 1 ? { ...step, state: 'active' } : step),
     };
     const updated = await github(`/issues/${issue.number}`, 'application/vnd.github+json', 'follow', 'POST', JSON.stringify({ body: JSON.stringify(dispatched, null, 2), state: 'closed' }));
@@ -178,6 +286,7 @@ exports.handler = async event => {
     const user = await authenticatedUser(event);
     if (!await dashboardMember(user)) return json(403, { error: 'This account does not have Release Dashboard access.' });
     if (event.httpMethod === 'GET') {
+      if (event.queryStringParameters?.view === 'command') return json(200, await commandCentre(Number(event.queryStringParameters.id)));
       const [requests, agents, availability, release] = await Promise.all([issues(REQUEST_LABEL), issues(AGENT_LABEL, 'open', 5), githubAvailability(), releaseVersion()]);
       const heartbeat = agents.map(item => parseBody(item.body)).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0] || null;
       const online = heartbeat && Date.now() - new Date(heartbeat.updatedAt || 0).getTime() < 90000;
@@ -185,7 +294,17 @@ exports.handler = async event => {
     }
     const body = parseBody(event.body);
     if (event.httpMethod === 'POST') return json(201, { request: await createRequest(user, body, await githubAvailability()) });
-    if (event.httpMethod === 'PATCH') return json(200, { request: await patchIssue(Number(body.id), body) });
+    if (event.httpMethod === 'PATCH') {
+      if (body.action === 'cancel-run' || body.action === 'retry-run') {
+        const details = await commandCentre(Number(body.id));
+        if (!details.run?.id) throw Object.assign(new Error('The GitHub workflow has not appeared yet.'), { statusCode: 409 });
+        const path = body.action === 'cancel-run' ? `/actions/runs/${details.run.id}/cancel` : `/actions/runs/${details.run.id}/rerun-failed-jobs`;
+        const response = await github(path, 'application/vnd.github+json', 'follow', 'POST');
+        if (!response.ok) throw new Error(body.action === 'cancel-run' ? 'GitHub could not cancel this workflow.' : 'GitHub could not retry the failed jobs.');
+        return json(200, { ok: true });
+      }
+      return json(200, { request: await patchIssue(Number(body.id), body) });
+    }
     return json(405, { error: 'Method not allowed.' });
   } catch (error) {
     return json(error.statusCode || 500, { error: error.message || 'Release control failed.' });

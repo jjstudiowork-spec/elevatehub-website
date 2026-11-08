@@ -27,9 +27,13 @@ async function authenticatedEmail(event) {
 }
 
 async function github(path, accept = 'application/vnd.github+json', redirect = 'follow', method = 'GET', body) {
+  return githubRepository(REPOSITORY, path, accept, redirect, method, body);
+}
+
+async function githubRepository(repository, path, accept = 'application/vnd.github+json', redirect = 'follow', method = 'GET', body) {
   const token = process.env.ELEVATE_PRIVATE_REPO_TOKEN;
   if (!token) throw Object.assign(new Error('Private beta downloads are not configured.'), { statusCode: 503 });
-  return fetch(`https://api.github.com/repos/${REPOSITORY}${path}`, {
+  return fetch(`https://api.github.com/repos/${repository}${path}`, {
     headers: { Accept: accept, Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
     redirect,
     method,
@@ -46,4 +50,4 @@ async function accessForRelease(release, email) {
   return access.testers?.map(value => value.toLowerCase()).includes(email) ? access : null;
 }
 
-module.exports = { REPOSITORY, accessForRelease, authenticatedEmail, authenticatedUser, github, json };
+module.exports = { REPOSITORY, accessForRelease, authenticatedEmail, authenticatedUser, github, githubRepository, json };

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08090c" />
+  <title>Release Command Centre | ElevateHub</title>
+  <link rel="icon" href="elevatehub.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="release-command.css" />
+</head>
+<body>
+  <header class="command-nav"><a href="release-dashboard.html">← <span>RELEASES</span></a><div><img src="elevatehub.png" alt="" /><b>RELEASE COMMAND CENTRE</b></div><span data-live-clock></span></header>
+  <main data-command hidden>
+    <section class="command-hero">
+      <div><span class="eyebrow">LIVE RELEASE</span><h1 data-command-version>Loading release</h1><p data-command-summary>Connecting to the Elevate release engine.</p><div class="hero-tags"><b data-command-product></b><b data-command-platforms></b><b data-command-engine></b></div></div>
+      <aside><div class="orb" data-command-orb><i></i></div><span>OVERALL STATUS</span><strong data-command-state>CONNECTING</strong><small data-command-updated>Waiting for GitHub</small></aside>
+    </section>
+
+    <section class="progress-card"><header><div><span>RELEASE PROGRESS</span><strong data-progress-copy>Preparing timeline</strong></div><b data-progress-percent>0%</b></header><div class="progress-track"><i data-progress-bar></i></div><ol data-phase-strip></ol></section>
+
+    <section class="build-grid">
+      <article class="build-lane" data-lane="macos"><header><div class="platform-icon">⌘</div><div><span>MACOS</span><h2>Universal build</h2></div><b data-lane-state>WAITING</b></header><div data-lane-jobs></div></article>
+      <article class="build-lane" data-lane="windows"><header><div class="platform-icon">⊞</div><div><span>WINDOWS</span><h2>x64 build</h2></div><b data-lane-state>WAITING</b></header><div data-lane-jobs></div></article>
+    </section>
+
+    <section class="command-lower">
+      <article class="activity-panel"><header><div><span>WORKFLOW ACTIVITY</span><h2>Everything happening now</h2></div><button type="button" data-toggle-technical>Show technical details</button></header><div class="activity-feed" data-activity-feed></div></article>
+      <aside class="release-sidebar">
+        <section><header><span>REPOSITORIES</span><small>GitHub stays behind the scenes</small></header><div data-repositories></div></section>
+        <section><header><span>RELEASE FILES</span><small data-artifact-count>Waiting for packages</small></header><div data-artifacts></div></section>
+        <section class="release-notes"><header><span>RELEASE NOTES</span></header><p data-command-notes></p></section>
+      </aside>
+    </section>
+
+    <footer class="command-actions"><div><i></i><span data-auto-refresh>Auto-refreshing every 10 seconds</span></div><div><a data-github-run hidden target="_blank" rel="noreferrer">Advanced · Open GitHub</a><button type="button" data-cancel-run hidden>Cancel build</button><button type="button" data-retry-run hidden>Retry failed jobs</button></div></footer>
+  </main>
+  <section class="command-loading" data-loading><div class="loader-mark"><i></i><i></i><i></i></div><strong>Opening command centre</strong><p>Connecting securely to your release workflow.</p></section>
+  <section class="command-error" data-error hidden><span>RELEASE UNAVAILABLE</span><h1>We couldn’t open this release.</h1><p data-error-copy></p><a href="release-dashboard.html">Return to Release Dashboard</a></section>
+  <script type="module" src="release-command.js"></script>
+</body>
+</html>

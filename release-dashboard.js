@@ -143,7 +143,7 @@ function renderRequests(requests = []) {
     const date = new Date(item.updatedAt || item.requestedAt || 0);
     const platformLabel = item.platforms === 'both' ? 'macOS + Windows' : item.platforms === 'windows' ? 'Windows' : 'macOS';
     const productLabel = item.product === 'hub' ? 'ElevateHub' : item.product === 'flow' ? 'ElevateFlow' : 'Elevate Suite';
-    return `<article class="request-row" data-status="${esc(item.status)}"><div><header><b>${esc(item.version ? `v${item.version} · ` : '')}${esc(productLabel)}</b><span>${esc(platformLabel)}</span><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></div><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? '<button type="button">Retry</button>' : ''}</div></article>`;
+    return `<article class="request-row" data-status="${esc(item.status)}"><a class="request-main" href="release-command.html?id=${esc(item.id)}"><header><b>${esc(item.version ? `v${item.version} · ` : '')}${esc(productLabel)}</b><span>${esc(platformLabel)}</span><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></a><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? '<button type="button">Retry</button>' : ''}</div></article>`;
   }).join('');
 }
 
@@ -175,11 +175,12 @@ async function createRequest() {
   confirmButton.textContent = 'Starting release…';
   feedback.textContent = 'Validating and dispatching release...';
   try {
-    await controlApi('POST', { version: versionInput.value.trim(), notes: notesInput.value.trim(), product: selectedProduct, platforms: selectedPlatforms, channel: 'stable', provider: releaseEngine });
+    const result = await controlApi('POST', { version: versionInput.value.trim(), notes: notesInput.value.trim(), product: selectedProduct, platforms: selectedPlatforms, channel: 'stable', provider: releaseEngine });
     review.hidden = true;
     confirmInput.value = '';
     feedback.textContent = `v${versionInput.value.trim()} was started successfully.`;
-    await refreshControl();
+    if (result.request?.id) location.href = `release-command.html?id=${result.request.id}`;
+    else await refreshControl();
   } catch (error) {
     feedback.textContent = error.message;
     confirmButton.disabled = false;
