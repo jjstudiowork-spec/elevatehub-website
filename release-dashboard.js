@@ -143,7 +143,9 @@ function renderRequests(requests = []) {
     const date = new Date(item.updatedAt || item.requestedAt || 0);
     const platformLabel = item.platforms === 'both' ? 'macOS + Windows' : item.platforms === 'windows' ? 'Windows' : 'macOS';
     const productLabel = item.product === 'hub' ? 'ElevateHub' : item.product === 'flow' ? 'ElevateFlow' : 'Elevate Suite';
-    return `<article class="request-row" data-status="${esc(item.status)}"><a class="request-main" href="release-command.html?id=${esc(item.id)}"><header><b>${esc(item.version ? `v${item.version} · ` : '')}${esc(productLabel)}</b><span>${esc(platformLabel)}</span><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></a><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? '<button type="button">Retry</button>' : ''}</div></article>`;
+    const opening = item.version ? `<a class="request-main" href="release-command.html?id=${esc(item.id)}">` : '<div class="request-main">';
+    const closing = item.version ? '</a>' : '</div>';
+    return `<article class="request-row" data-status="${esc(item.status)}">${opening}<header><b>${esc(item.version ? `v${item.version} · ` : '')}${esc(productLabel)}</b><span>${esc(platformLabel)}</span><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small>${closing}<div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? '<button type="button">Retry</button>' : ''}</div></article>`;
   }).join('');
 }
 
