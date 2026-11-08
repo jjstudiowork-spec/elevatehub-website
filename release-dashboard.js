@@ -154,6 +154,7 @@ async function refreshControl() {
     githubReason = payload.github?.reason || '';
     agentOnline = Boolean(payload.agent?.online);
     const agentBusy = Boolean(payload.agent?.busy);
+    const agentPlatform = payload.agent?.platform;
     agentReady = agentOnline && !agentBusy;
     currentVersion = payload.release?.current || currentVersion;
     if (!versionInput.value && payload.release?.next) versionInput.value = payload.release.next;
