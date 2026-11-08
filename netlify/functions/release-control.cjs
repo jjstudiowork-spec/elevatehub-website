@@ -14,6 +14,10 @@ function issueData(issue) {
   return {
     id: issue.number,
     platform: data.platform || 'macos',
+    platforms: data.platforms || data.platform || 'macos',
+    product: data.product || 'suite',
+    version: data.version || '',
+    notes: data.notes || '',
     channel: data.channel || 'stable',
     provider: data.provider || 'elevate',
     status: data.status || (issue.state === 'closed' ? 'finished' : 'queued'),
@@ -24,6 +28,28 @@ function issueData(issue) {
     steps: Array.isArray(data.steps) ? data.steps : [],
     logs: Array.isArray(data.logs) ? data.logs.slice(-30) : [],
   };
+}
+
+function nextPatch(version) {
+  const match = String(version || '').match(/^(\d+)\.(\d+)\.(\d+)$/);
+  return match ? `${match[1]}.${match[2]}.${Number(match[3]) + 1}` : '';
+}
+
+function compareVersions(left, right) {
+  const a = String(left).split('.').map(Number);
+  const b = String(right).split('.').map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    if (a[index] !== b[index]) return a[index] - b[index];
+  }
+  return 0;
+}
+
+async function releaseVersion() {
+  const response = await github('/releases/latest');
+  if (!response.ok) return { current: '', next: '' };
+  const release = await response.json();
+  const current = String(release.tag_name || '').replace(/^v/, '');
+  return { current, next: nextPatch(current) };
 }
 
 async function githubAvailability() {
@@ -77,7 +103,17 @@ async function issues(label, state = 'all', perPage = 20) {
 }
 
 async function createRequest(user, body, availability) {
-  const platform = body.platform === 'windows' ? 'windows' : 'macos';
+  const platforms = ['macos', 'windows', 'both'].includes(body.platforms) ? body.platforms : 'both';
+  const platform = platforms === 'both' ? 'both' : platforms;
+  const product = ['suite', 'hub', 'flow'].includes(body.product) ? body.product : 'suite';
+  const version = String(body.version || '').trim().replace(/^v/i, '');
+  const notes = String(body.notes || '').trim();
+  if (!/^\d+\.\d+\.\d+$/.test(version)) throw Object.assign(new Error('Enter a version using X.Y.Z, such as 0.5.21.'), { statusCode: 400 });
+  if (!notes) throw Object.assign(new Error('Add release notes before starting the release.'), { statusCode: 400 });
+  const latest = await releaseVersion();
+  if (latest.current && compareVersions(version, latest.current) <= 0) throw Object.assign(new Error(`Choose a version newer than v${latest.current}.`), { statusCode: 409 });
+  const tagResponse = await github(`/git/ref/tags/v${encodeURIComponent(version)}`);
+  if (tagResponse.ok) throw Object.assign(new Error(`v${version} already exists. Choose a newer version.`), { statusCode: 409 });
   const channel = body.channel === 'beta' ? 'beta' : 'stable';
   const now = new Date().toISOString();
   const requestedProvider = ['auto', 'github', 'elevate'].includes(body.provider) ? body.provider : 'auto';
@@ -85,11 +121,12 @@ async function createRequest(user, body, availability) {
   if (provider === 'github' && !availability.available) {
     throw Object.assign(new Error('GitHub Actions is unavailable. Choose ElevateRelease or Auto.'), { statusCode: 409 });
   }
+  if (provider === 'elevate') throw Object.assign(new Error('Full releases now use GitHub Actions. ElevateRelease is reserved for recovery builds.'), { statusCode: 409 });
   const payload = {
-    platform, channel, provider, requestedProvider, status: 'queued', requestedBy: user.email, requestedAt: now, updatedAt: now,
-    message: provider === 'github' ? 'Waiting for the trusted computer to start the GitHub release.' : `Waiting for the ${platform === 'macos' ? 'macOS' : 'Windows'} ElevateRelease agent.`, logs: [], steps: [
-      { id: 'claim', label: 'Developer computer accepts request', state: 'pending' },
-      { id: 'build', label: `Build ${platform === 'macos' ? 'macOS' : 'Windows'} app`, state: 'pending' },
+    platform, platforms, product, version, notes, channel, provider, requestedProvider, status: 'queued', requestedBy: user.email, requestedAt: now, updatedAt: now,
+    message: provider === 'github' ? 'Preparing the GitHub release workflow.' : `Waiting for the ${platform === 'macos' ? 'macOS' : 'Windows'} ElevateRelease agent.`, logs: [], steps: [
+      { id: 'claim', label: provider === 'github' ? 'Validate and dispatch release' : 'Developer computer accepts request', state: 'pending' },
+      { id: 'build', label: `Build ${product === 'suite' ? 'Elevate Suite' : product === 'hub' ? 'ElevateHub' : 'ElevateFlow'} for ${platforms === 'both' ? 'macOS and Windows' : platforms === 'macos' ? 'macOS' : 'Windows'}`, state: 'pending' },
       { id: 'deploy', label: 'Deploy ElevateHub website', state: 'pending' },
     ],
   };
@@ -97,7 +134,27 @@ async function createRequest(user, body, availability) {
     title: `Release request: ${platform} ${channel} (${now})`, body: JSON.stringify(payload, null, 2), labels: [REQUEST_LABEL],
   }));
   if (!response.ok) throw new Error('The private release request could not be queued.');
-  return issueData(await response.json());
+  const issue = await response.json();
+  if (provider === 'github') {
+    const dispatch = await github('/actions/workflows/release.yml/dispatches', 'application/vnd.github+json', 'follow', 'POST', JSON.stringify({
+      ref: 'main',
+      inputs: { version, release_notes: notes, product, platforms },
+    }));
+    if (!dispatch.ok) {
+      const detail = await dispatch.text();
+      throw new Error(`GitHub rejected the release workflow${detail ? `: ${detail.slice(0, 180)}` : '.'}`);
+    }
+    const dispatched = {
+      ...payload,
+      status: 'dispatched',
+      message: `v${version} was sent to GitHub Actions. Builds are now running.`,
+      updatedAt: new Date().toISOString(),
+      steps: payload.steps.map((step, index) => index === 0 ? { ...step, state: 'complete' } : index === 1 ? { ...step, state: 'active' } : step),
+    };
+    const updated = await github(`/issues/${issue.number}`, 'application/vnd.github+json', 'follow', 'POST', JSON.stringify({ body: JSON.stringify(dispatched, null, 2), state: 'closed' }));
+    return issueData(updated.ok ? await updated.json() : { ...issue, body: JSON.stringify(dispatched) });
+  }
+  return issueData(issue);
 }
 
 async function patchIssue(number, changes) {
@@ -121,10 +178,10 @@ exports.handler = async event => {
     const user = await authenticatedUser(event);
     if (!await dashboardMember(user)) return json(403, { error: 'This account does not have Release Dashboard access.' });
     if (event.httpMethod === 'GET') {
-      const [requests, agents, availability] = await Promise.all([issues(REQUEST_LABEL), issues(AGENT_LABEL, 'open', 5), githubAvailability()]);
+      const [requests, agents, availability, release] = await Promise.all([issues(REQUEST_LABEL), issues(AGENT_LABEL, 'open', 5), githubAvailability(), releaseVersion()]);
       const heartbeat = agents.map(item => parseBody(item.body)).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0] || null;
       const online = heartbeat && Date.now() - new Date(heartbeat.updatedAt || 0).getTime() < 90000;
-      return json(200, { agent: { online: Boolean(online), ...(heartbeat || {}) }, github: availability, requests: requests.map(issueData) });
+      return json(200, { agent: { online: Boolean(online), ...(heartbeat || {}) }, github: availability, release, requests: requests.map(issueData) });
     }
     const body = parseBody(event.body);
     if (event.httpMethod === 'POST') return json(201, { request: await createRequest(user, body, await githubAvailability()) });

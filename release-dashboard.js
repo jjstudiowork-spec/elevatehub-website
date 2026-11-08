@@ -13,8 +13,16 @@ const steps = document.querySelector('[data-release-steps]');
 const agentState = document.querySelector('[data-agent-state]');
 const agentCopy = document.querySelector('[data-agent-copy]');
 const requestButton = document.querySelector('[data-request-release]');
-const platformSelect = document.querySelector('[data-release-platform]');
-const channelSelect = document.querySelector('[data-release-channel]');
+const versionInput = document.querySelector('[data-release-version-input]');
+const notesInput = document.querySelector('[data-release-notes]');
+const notesCount = document.querySelector('[data-notes-count]');
+const productControl = document.querySelector('[data-release-product]');
+const platformsControl = document.querySelector('[data-release-platforms]');
+const review = document.querySelector('[data-release-review]');
+const confirmInput = document.querySelector('[data-release-confirm]');
+const confirmButton = document.querySelector('[data-confirm-release]');
+const readiness = document.querySelector('.release-readiness');
+const readinessText = document.querySelector('[data-release-ready]');
 const feedback = document.querySelector('[data-dashboard-feedback]');
 const requestList = document.querySelector('[data-release-requests]');
 const refreshButton = document.querySelector('[data-refresh-dashboard]');
@@ -26,6 +34,9 @@ let agentReady = false;
 let releaseEngine = 'auto';
 let githubAvailable = false;
 let githubReason = '';
+let selectedProduct = 'suite';
+let selectedPlatforms = 'both';
+let currentVersion = '';
 
 function renderEngine() {
   engineControl.querySelectorAll('[data-engine]').forEach(button => {
@@ -37,6 +48,44 @@ function renderEngine() {
     : releaseEngine === 'github'
       ? (githubReason || (githubAvailable ? 'GitHub Actions is available.' : 'GitHub Actions is currently unavailable.'))
       : 'Builds and publishes on the trusted developer computer.';
+}
+
+function resolvedEngine() {
+  return releaseEngine === 'auto' ? (githubAvailable ? 'github' : 'elevate') : releaseEngine;
+}
+
+function versionParts(value) {
+  const match = String(value || '').trim().replace(/^v/i, '').match(/^(\d+)\.(\d+)\.(\d+)$/);
+  return match ? match.slice(1).map(Number) : null;
+}
+
+function versionIsNewer(value) {
+  const next = versionParts(value);
+  const current = versionParts(currentVersion);
+  if (!next) return false;
+  if (!current) return true;
+  return next.some((part, index) => part !== current[index] && part > current[index] && next.slice(0, index).every((prior, priorIndex) => prior === current[priorIndex]));
+}
+
+function releaseFormValid() {
+  const engine = resolvedEngine();
+  const serviceReady = engine === 'github' && githubAvailable;
+  return serviceReady && versionIsNewer(versionInput.value) && notesInput.value.trim().length > 0;
+}
+
+function updateComposer() {
+  const valid = releaseFormValid();
+  requestButton.disabled = !valid;
+  const engine = resolvedEngine();
+  const serviceReady = engine === 'github' && githubAvailable;
+  readiness.classList.toggle('ready', serviceReady);
+  readinessText.textContent = serviceReady ? 'GitHub Actions ready' : engine === 'github' ? 'GitHub Actions unavailable' : 'Recovery engine only';
+  document.querySelector('[data-request-help]').textContent = !serviceReady
+    ? `${engine === 'github' ? 'GitHub Actions is unavailable.' : 'ElevateRelease is reserved for recovery builds. Choose Auto or GitHub.'}`
+    : !versionIsNewer(versionInput.value)
+      ? `Enter a version newer than ${currentVersion ? `v${currentVersion}` : 'the current release'}.`
+      : !notesInput.value.trim() ? 'Add release notes to continue.' : 'Everything is ready for review.';
+  notesCount.textContent = notesInput.value.length;
 }
 
 function esc(value) {
@@ -90,9 +139,11 @@ function renderRequests(requests = []) {
   }
   requestList.innerHTML = requests.map(item => {
     const cancellable = ['queued', 'claimed'].includes(item.status);
-    const retryable = ['failed', 'cancelled'].includes(item.status);
+    const retryable = false;
     const date = new Date(item.updatedAt || item.requestedAt || 0);
-    return `<article class="request-row" data-status="${esc(item.status)}"><div><header><b>${esc(item.platform === 'windows' ? 'Windows' : 'macOS')} ${esc(item.channel)}</b><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></div><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? `<button type="button" data-action="retry" data-platform="${esc(item.platform)}" data-channel="${esc(item.channel)}">Retry</button>` : ''}</div></article>`;
+    const platformLabel = item.platforms === 'both' ? 'macOS + Windows' : item.platforms === 'windows' ? 'Windows' : 'macOS';
+    const productLabel = item.product === 'hub' ? 'ElevateHub' : item.product === 'flow' ? 'ElevateFlow' : 'Elevate Suite';
+    return `<article class="request-row" data-status="${esc(item.status)}"><div><header><b>${esc(item.version ? `v${item.version} · ` : '')}${esc(productLabel)}</b><span>${esc(platformLabel)}</span><span>${esc(item.provider === 'github' ? 'GITHUB' : 'ELEVATERELEASE')}</span><span>${esc(String(item.status).toUpperCase())}</span></header><p>${esc(item.message)}</p><small>#${esc(item.id)} · ${esc(item.requestedBy)} · ${esc(Number.isFinite(date.getTime()) ? date.toLocaleString() : '')}</small></div><div class="request-actions">${cancellable ? `<button type="button" data-action="cancel" data-id="${esc(item.id)}">Cancel</button>` : ''}${retryable ? '<button type="button">Retry</button>' : ''}</div></article>`;
   }).join('');
 }
 
@@ -104,42 +155,67 @@ async function refreshControl() {
     agentOnline = Boolean(payload.agent?.online);
     const agentBusy = Boolean(payload.agent?.busy);
     agentReady = agentOnline && !agentBusy;
-    const agentPlatform = payload.agent?.platform;
-    [...platformSelect.options].forEach(option => { option.disabled = agentOnline && Boolean(agentPlatform) && option.value !== agentPlatform; });
-    if (agentOnline && agentPlatform) platformSelect.value = agentPlatform;
-    requestButton.disabled = !agentReady;
+    currentVersion = payload.release?.current || currentVersion;
+    if (!versionInput.value && payload.release?.next) versionInput.value = payload.release.next;
     agentState.textContent = agentOnline ? `${payload.agent.name || 'Developer computer'} ${agentBusy ? 'building' : 'online'}` : 'Developer computer offline';
     agentCopy.textContent = agentOnline ? `Release agent ${agentBusy ? 'is handling a release' : 'is ready'}${agentPlatform ? ` on ${agentPlatform}` : ''}.` : 'Open VS Code with the ElevateHub Toolkit on the trusted computer.';
     document.querySelector('[data-request-help]').textContent = agentOnline ? (agentBusy ? 'Another release is currently running.' : 'The agent is ready to accept a local build.') : 'The controls unlock while the VS Code release agent is online.';
     renderRequests(payload.requests);
     renderEngine();
+    updateComposer();
   } catch (error) {
     requestButton.disabled = true;
     feedback.textContent = error.message;
   }
 }
 
-async function createRequest(platform = platformSelect.value, channel = channelSelect.value) {
-  requestButton.disabled = true;
-  feedback.textContent = 'Queuing release request...';
+async function createRequest() {
+  confirmButton.disabled = true;
+  confirmButton.textContent = 'Starting release…';
+  feedback.textContent = 'Validating and dispatching release...';
   try {
-    await controlApi('POST', { platform, channel, provider: releaseEngine });
-    feedback.textContent = `Release queued with ${releaseEngine === 'auto' ? (githubAvailable ? 'GitHub' : 'ElevateRelease') : releaseEngine === 'github' ? 'GitHub' : 'ElevateRelease'}.`;
+    await controlApi('POST', { version: versionInput.value.trim(), notes: notesInput.value.trim(), product: selectedProduct, platforms: selectedPlatforms, channel: 'stable', provider: releaseEngine });
+    review.hidden = true;
+    confirmInput.value = '';
+    feedback.textContent = `v${versionInput.value.trim()} was started successfully.`;
     await refreshControl();
   } catch (error) {
     feedback.textContent = error.message;
+    confirmButton.disabled = false;
   } finally {
-    requestButton.disabled = !agentReady;
+    confirmButton.textContent = 'Start real release';
+    updateComposer();
   }
 }
 
-requestButton.addEventListener('click', () => createRequest());
+function openReview() {
+  if (!releaseFormValid()) return;
+  document.querySelector('[data-review-version]').textContent = `v${versionInput.value.trim()}`;
+  document.querySelector('[data-review-product]').textContent = selectedProduct === 'hub' ? 'ElevateHub' : selectedProduct === 'flow' ? 'ElevateFlow' : 'Elevate Suite';
+  document.querySelector('[data-review-platforms]').textContent = selectedPlatforms === 'both' ? 'macOS + Windows' : selectedPlatforms === 'macos' ? 'macOS' : 'Windows';
+  document.querySelector('[data-review-engine]').textContent = resolvedEngine() === 'github' ? 'GitHub Actions' : 'ElevateRelease';
+  document.querySelector('[data-review-notes]').textContent = notesInput.value.trim();
+  review.hidden = false;
+  confirmInput.value = '';
+  confirmButton.disabled = true;
+  setTimeout(() => confirmInput.focus(), 50);
+}
+
+requestButton.addEventListener('click', openReview);
+document.querySelectorAll('[data-close-review]').forEach(button => button.addEventListener('click', () => { review.hidden = true; }));
+confirmInput.addEventListener('input', () => { confirmButton.disabled = confirmInput.value.trim() !== 'RELEASE'; });
+confirmButton.addEventListener('click', createRequest);
+versionInput.addEventListener('input', updateComposer);
+notesInput.addEventListener('input', updateComposer);
+productControl.addEventListener('click', event => { const button = event.target.closest('[data-product]'); if (!button) return; selectedProduct = button.dataset.product; productControl.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button)); updateComposer(); });
+platformsControl.addEventListener('click', event => { const button = event.target.closest('[data-platforms]'); if (!button) return; selectedPlatforms = button.dataset.platforms; platformsControl.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button)); updateComposer(); });
 refreshButton.addEventListener('click', refreshControl);
 engineControl.addEventListener('click', async event => {
   const button = event.target.closest('[data-engine]');
   if (!button || button.disabled) return;
   releaseEngine = button.dataset.engine;
   renderEngine();
+  updateComposer();
   try {
     await setDoc(doc(db, 'elevateReleaseControl', 'admins'), { releaseProvider: releaseEngine }, { merge: true });
     feedback.textContent = `Default release engine set to ${button.textContent}.`;
@@ -153,7 +229,7 @@ requestList.addEventListener('click', async event => {
   button.disabled = true;
   try {
     if (button.dataset.action === 'cancel') await controlApi('PATCH', { id: Number(button.dataset.id), action: 'cancel' });
-    else await createRequest(button.dataset.platform, button.dataset.channel);
+    else openReview();
     await refreshControl();
   } catch (error) {
     feedback.textContent = error.message;
