@@ -31,6 +31,7 @@
 .dashboard-history header { display: flex; align-items: center; justify-content: space-between; }
 .dashboard-history h2 { margin: 5px 0 0; font-size: 19px; font-weight: 400; }
 .dashboard-history button, .request-actions button { cursor: pointer; }
+.history-actions{display:flex;align-items:center;gap:7px}.history-actions a{height:38px;display:flex;align-items:center;padding:0 12px;border:1px solid #806838;border-radius:5px;background:#292217;color:#e6c783;text-decoration:none;font:600 10px Oswald,sans-serif;cursor:pointer}
 .dashboard-history > [data-release-requests] { display: grid; gap: 8px; margin-top: 16px; }
 .dashboard-history > [data-release-requests] > p { color: #71747c; font: 11px Arial, sans-serif; }
 .request-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 14px; border: 1px solid #2a2c33; border-radius: 6px; background: #0c0d11; }

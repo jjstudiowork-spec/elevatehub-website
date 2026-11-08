@@ -133,6 +133,10 @@ async function controlApi(method = 'GET', payload) {
 }
 
 function renderRequests(requests = []) {
+  const latestDetailed = requests.find(item => item.version);
+  const commandLink = document.querySelector('[data-open-command]');
+  commandLink.hidden = !latestDetailed;
+  if (latestDetailed) commandLink.href = `release-command.html?id=${latestDetailed.id}`;
   if (!requests.length) {
     requestList.innerHTML = '<p>No website release requests yet.</p>';
     return;
