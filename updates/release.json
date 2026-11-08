@@ -1,0 +1,15 @@
+{
+  "version": "0.5.20",
+  "publishedAt": "2026-11-07T16:31:08Z",
+  "notes": "Visual Control Avenue support, streamlined account setup, access controls, and reliability improvements.",
+  "installers": {
+    "macos-suite": {
+      "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.20/Elevate-Suite-0.5.20-universal.pkg",
+      "size": 108893523
+    },
+    "windows-suite": {
+      "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.20/Elevate-Suite-0.5.20-setup.exe",
+      "size": 50099133
+    }
+  }
+}

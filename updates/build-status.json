@@ -1,0 +1,31 @@
+{
+  "status": "complete",
+  "version": "v0.5.20",
+  "message": "Elevate Suite 0.5.20 is published for macOS and Windows.",
+  "activeStep": "deploy",
+  "startedAt": "2026-11-07T14:10:17Z",
+  "updatedAt": "2026-11-08T01:05:00Z",
+  "finishedAt": "2026-11-08T01:05:00Z",
+  "steps": [
+    {
+      "id": "prepare",
+      "label": "Prepare release files",
+      "state": "complete"
+    },
+    {
+      "id": "build",
+      "label": "Build macOS and Windows apps",
+      "state": "complete"
+    },
+    {
+      "id": "stage",
+      "label": "Publish signed updates and installers",
+      "state": "complete"
+    },
+    {
+      "id": "deploy",
+      "label": "Deploy ElevateHub website",
+      "state": "complete"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "version": "0.5.20",
+  "notes": "# ElevateHub 0.5.20\n\nVisual Control Avenue support, streamlined account setup, access controls, and reliability improvements.",
+  "platforms": {
+    "darwin-aarch64": {
+      "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.20/ElevateHub_0.5.20_universal.app.tar.gz",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRazBmT084NFhvdzhzbDB4WjVaNlBZZGxQL0E0RTBvV2lSTVlTRkRJUk02cDlKZGxzdUpwTDc4bjdtYXFBblh6ZnlLZnJscjZPVi9WNUw0Zlc4eTREUS9DWWR5YnQvS2dzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0MDY3NjU0CWZpbGU6RWxldmF0ZUh1Yi5hcHAudGFyLmd6CnE4TjM4c1IzWXIyNXJWazMycVlwakRHUW1yenJkdDBJVGhGUHhDUUNQU3JjRk5xT3FxSXkyajNkMWZmem9vZWpyemVxd25GRlc4TUxvaEZHRENhdUJ3PT0K"
+    },
+    "darwin-x86_64": {
+      "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.20/ElevateHub_0.5.20_universal.app.tar.gz",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRazBmT084NFhvdzhzbDB4WjVaNlBZZGxQL0E0RTBvV2lSTVlTRkRJUk02cDlKZGxzdUpwTDc4bjdtYXFBblh6ZnlLZnJscjZPVi9WNUw0Zlc4eTREUS9DWWR5YnQvS2dzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0MDY3NjU0CWZpbGU6RWxldmF0ZUh1Yi5hcHAudGFyLmd6CnE4TjM4c1IzWXIyNXJWazMycVlwakRHUW1yenJkdDBJVGhGUHhDUUNQU3JjRk5xT3FxSXkyajNkMWZmem9vZWpyemVxd25GRlc4TUxvaEZHRENhdUJ3PT0K"
+    },
+    "windows-x86_64": {
+      "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.20/ElevateHub_0.5.20_x64-setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRazBmT084NFhvdzc1K1dXVVZQVU8ra2FLc0VaUkl0TTFpM3Q2NXExNWNtRmVnNXRsQmFjZU1xSURPQmw3YmtBRzEwZXNrTGsvWWRxbTlhSnJUbVo4NWwyZ1Z4OWlYaVFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0MDY4OTg2CWZpbGU6RWxldmF0ZUh1Yl8wLjUuMjBfeDY0LXNldHVwLmV4ZQpFTHBDc0ZndDVnQ1lMd01ZS1VGRUYrbVNpTFQvdDQ5aEY4NnVkcFFBMUlPbUdFb1V2ZnJldkg2OUVubFhwL1grTmlGeDlpMUFGQXN5clVUbXE1b2tEZz09Cg=="
+    }
+  },
+  "pub_date": "2026-11-07T16:29:51.494Z"
+}
