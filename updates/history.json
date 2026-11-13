@@ -1,5 +1,21 @@
 [
   {
+    "version": "0.5.26",
+    "product": "suite",
+    "publishedAt": "2026-11-13T14:26:40Z",
+    "notes": "# ElevateHub 0.5.26\n\nAdded browser-based Visual Control with shared desktop sets, services, connections and Stream Deck configuration. Improved top-right notifications, colour-cue reliability, and browser-to-desktop navigation. Releases now automatically reuse ElevateFlow when no Flow changes are detected.",
+    "installers": {
+      "windows-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.26/Elevate-Suite-0.5.26-setup.exe",
+        "size": 50354657
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.26/Elevate-Suite-0.5.26-universal.pkg",
+        "size": 109926173
+      }
+    }
+  },
+  {
     "version": "0.5.21",
     "product": "suite",
     "publishedAt": "2026-11-08T05:13:25Z",
@@ -253,13 +269,6 @@
     "product": "hub",
     "publishedAt": "2026-09-01T13:59:41Z",
     "notes": "Release v0.2.3",
-    "installers": {}
-  },
-  {
-    "version": "0.2.1",
-    "product": "hub",
-    "publishedAt": "2026-09-01T13:59:49Z",
-    "notes": "Add permissions to workflow",
     "installers": {}
   }
 ]
