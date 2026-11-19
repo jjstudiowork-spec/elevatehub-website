@@ -1,5 +1,21 @@
 [
   {
+    "version": "0.5.27",
+    "product": "suite",
+    "publishedAt": "2026-11-19T12:38:02Z",
+    "notes": "# ElevateHub 0.5.27\n\nVisual Control defaults, browser service startup, operator workflow improvements, and refreshed Hub and Flow experiences.",
+    "installers": {
+      "windows-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.27/Elevate-Suite-0.5.27-setup.exe",
+        "size": 50384737
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.27/Elevate-Suite-0.5.27-universal.pkg",
+        "size": 109962121
+      }
+    }
+  },
+  {
     "version": "0.5.26",
     "product": "suite",
     "publishedAt": "2026-11-13T14:26:40Z",
@@ -262,13 +278,6 @@
     "product": "hub",
     "publishedAt": "2026-09-01T13:59:34Z",
     "notes": "Release v0.2.4",
-    "installers": {}
-  },
-  {
-    "version": "0.2.3",
-    "product": "hub",
-    "publishedAt": "2026-09-01T13:59:41Z",
-    "notes": "Release v0.2.3",
     "installers": {}
   }
 ]
