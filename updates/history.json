@@ -1,5 +1,29 @@
 [
   {
+    "version": "0.5.28",
+    "product": "hub",
+    "publishedAt": "2026-11-20T13:20:03Z",
+    "notes": "# ElevateHub 0.5.28\n\nFixed importing and exporting in Visual Control, with additional redesign.",
+    "installers": {
+      "windows-1": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.28/Elevate-Suite-0.5.28-setup.exe",
+        "size": 50382944
+      },
+      "macos-2": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.28/Elevate-Suite-0.5.28-universal.pkg",
+        "size": 109961004
+      },
+      "macos-3": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.28/ElevateHub_0.5.28_universal.dmg",
+        "size": 88251666
+      },
+      "windows-4": {
+        "url": "https://github.com/jjstudiowork-spec/elevatehub-downloads/releases/download/v0.5.28/ElevateHub_0.5.28_x64-setup.exe",
+        "size": 41737920
+      }
+    }
+  },
+  {
     "version": "0.5.27",
     "product": "suite",
     "publishedAt": "2026-11-19T12:38:02Z",
@@ -271,13 +295,6 @@
     "product": "hub",
     "publishedAt": "2026-09-01T13:59:26Z",
     "notes": "Release v0.2.5",
-    "installers": {}
-  },
-  {
-    "version": "0.2.4",
-    "product": "hub",
-    "publishedAt": "2026-09-01T13:59:34Z",
-    "notes": "Release v0.2.4",
     "installers": {}
   }
 ]
